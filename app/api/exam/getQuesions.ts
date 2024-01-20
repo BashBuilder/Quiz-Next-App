@@ -1,4 +1,14 @@
-export async function (req, res) {
+import { NextApiRequest, NextApiResponse } from "next";
 
-  res.status(200).json({success:"the api has successfully been called"});
+export async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): Promise<void> {
+  try {
+    return res
+      .status(200)
+      .json({ success: "the api has successfully been called" });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
 }
