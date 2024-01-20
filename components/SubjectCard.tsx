@@ -32,13 +32,14 @@ export default function SelectSubject() {
 
   console.log(questions);
 
-  if (questions.length !== 0)
+  if (questions.length !== 0) {
     // @ts-ignore
-    // const { subject, subject, options } = questions;
-
+    const { subject, option, question } = questions[0];
+    console.log(option);
     return (
-      <section className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
+      <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
         {/* the subject panel */}
+        <h3 className="capitalize"> {subject} </h3>
         <div className="flex w-4/5 max-w-5xl flex-col gap-4 md:gap-10">
           {/* the top question section */}
           <div className=" flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:px-20 md:py-10 ">
@@ -47,7 +48,7 @@ export default function SelectSubject() {
               <div className="flex gap-1">
                 <p>1.</p>
                 {/* @ts-ignore */}
-                {/* <p> {questions[0][0].question} </p> */}
+                <p> {question} </p>
               </div>
               <div className="flex flex-col gap-2">
                 {
@@ -91,6 +92,7 @@ export default function SelectSubject() {
         </div>
       </section>
     );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
