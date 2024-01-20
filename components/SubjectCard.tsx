@@ -53,6 +53,16 @@ export default function SelectSubject() {
               <div className="flex flex-col gap-2">
                 {
                   // @ts-ignore
+                  Object.keys(option).map((key, index) => (
+                    <label key={index} className=" cursor-pointer">
+                      <input
+                        type="radio"
+                        className="mr-2 cursor-pointer "
+                        name="Option"
+                      />
+                      {option[key]}
+                    </label>
+                  ))
                   // questions[0][0].option.map((opt, index) => (
                   //   <label key={index} className=" cursor-pointer">
                   //     <input
