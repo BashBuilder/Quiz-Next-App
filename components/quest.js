@@ -32,3 +32,27 @@ const questions = {
     solution: "",
   },
 };
+
+
+ // <label key={index} className=" cursor-pointer">
+                      //   <input
+                      //     type="radio"
+                      //     className="mr-2 cursor-pointer "
+                      //     name="option"
+                      //     value={key} // Add a value attribute
+                      //     onChange={(e) => handleSelection(e, qIndex + 1)} // Add an onChange handler
+                      //     // @ts-ignore
+                      //     checked={key === selectedOption[qIndex + 1]}
+                      //   />
+                        {/* @ts-ignore */}
+                      //   {key}. {option[key]}
+                      // </label>
+
+                      
+  const handleSelection = (e: any, questionIndex: number) => {
+    const value = e.target.value;
+    setSelectedOption((prev) => ({
+      ...prev,
+      [questionIndex]: value,
+    }));
+  };

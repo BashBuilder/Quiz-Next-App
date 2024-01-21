@@ -1,5 +1,5 @@
 "use client";
-// Import modules
+
 import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
@@ -63,9 +63,19 @@ export default function SelectSubject() {
     setQuestionIndex((prevIndex) => prevIndex - 1);
   const handleRandomQuestion = (index: number) => setQuestionIndex(index);
 
+  const [selectedOption, setSelectedOption] = useState({});
+
+  const handleAnswerQuestion = (option: string, num: number) => {
+    setSelectedOption((prevOption) => ({ ...prevOption, [num]: option }));
+  };
+
   if (questions) {
     const currentQuestion = questions.data[questionIndex];
     const { option, question } = currentQuestion;
+
+    // Define a function to handle the selection change
+    // @ts-ignore
+    console.log(selectedOption);
 
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
@@ -76,30 +86,38 @@ export default function SelectSubject() {
           Fetch Questions
         </button>
         {/* the subject panel */}
-        {/* <h5 className="text-right ">Time remaining : 2 min</h5> */}
         <h3 className="capitalize"> {questions.subject} </h3>
+
         <div className="flex w-4/5 max-w-5xl flex-col gap-4 md:gap-10">
           {/* the top question section */}
           <div className=" flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:px-20 md:py-10 ">
-            <article className="flex flex-col gap-4 ">
-              <div className="flex gap-1">
-                <p className="text-xl">{questionIndex + 1}.</p>
-                <p className="text-xl"> {question} </p>
-              </div>
-              <div className="flex flex-col gap-2">
-                {Object.keys(option).map((key: string, index) => (
-                  <label key={index} className=" cursor-pointer">
-                    <input
-                      type="radio"
-                      className="mr-2 cursor-pointer "
-                      name="Option"
-                    />
-                    {/* @ts-ignore */}
-                    {key}. {option[key]}
-                  </label>
-                ))}
-              </div>
-            </article>
+            {questions.data.map((item, qIndex) => {
+              return (
+                <article
+                  key={qIndex}
+                  className={` ${qIndex === questionIndex ? "flex flex-col gap-4" : "hidden"} `}
+                >
+                  <div className="flex gap-1">
+                    <p className="text-xl">{questionIndex + 1}.</p>
+                    <p className="text-xl"> {question} </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-2">
+                    {Object.keys(option).map((opt: string, index) => (
+                      <button
+                        key={index}
+                        //@ts-ignore
+                        className={`rounded-md px-4 py-2 text-left  ${selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "hover:bg-slate-100"} `}
+                        onClick={() => handleAnswerQuestion(opt, qIndex + 1)}
+                      >
+                        <span className="pr-4">{opt}.</span>
+                        {/* @ts-ignore */}
+                        {option[opt]}
+                      </button>
+                    ))}
+                  </div>
+                </article>
+              );
+            })}
 
             {/* the next and previos button goes here */}
             <div className="my-6 flex justify-between">
@@ -122,16 +140,21 @@ export default function SelectSubject() {
 
           {/* the lower question navigation pane  */}
           <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
-            {/* @ts-ignore */}
-            {questions.data.map((num, index) => (
-              <button
-                key={index}
-                className={`h-10 w-10 rounded-md bg-slate-200 text-sm ${index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
-                onClick={() => handleRandomQuestion(index)}
-              >
-                {index + 1}
-              </button>
-            ))}
+            {questions.data.map((num, index) => {
+              // @ts-ignore
+              // console.log(selectedOption[index + 1] === undefined);
+              console.log(selectedOption[index + 1] !== undefined);
+              return (
+                <button
+                  key={index}
+                  // @ts-ignore
+                  className={`h-10 w-10 rounded-md text-sm  ${selectedOption[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
+                  onClick={() => handleRandomQuestion(index)}
+                >
+                  {index + 1}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
