@@ -4,12 +4,12 @@ import { useState } from "react";
 
 export default function SelectSubject() {
   const [questions, setquestions] = useState([]);
-  const [questionIndex, setQuestionIndex] = useState(1);
+  const [questionIndex, setQuestionIndex] = useState(0);
 
   async function getQuestions() {
     try {
       const response = await fetch(
-        "https://questions.aloc.com.ng/api/v2/m/1?subject=chemistry",
+        "https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry",
         {
           headers: {
             Accept: "application/json",
@@ -26,6 +26,7 @@ export default function SelectSubject() {
       console.log("The error from fetching is ", error);
     }
   }
+  console.log(questions);
 
   const handleNextQuestion = () =>
     setQuestionIndex((prevIndex) => prevIndex + 1);
@@ -36,13 +37,19 @@ export default function SelectSubject() {
 
   if (questions.length !== 0) {
     // @ts-ignore
+    if (questionIndex + 1 > questions.length) {
+      setQuestionIndex(questionIndex);
+    } else if (questionIndex < 0) {
+      setQuestionIndex(0);
+    }
+
     const { subject, option, question } = questions[questionIndex];
 
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
         <button
           onClick={getQuestions}
-          className="rounded-md bg-primary px-4 py-2 "
+          className="rounded-md bg-primary px-4 py-2 text-background "
         >
           Fetch Questions
         </button>
@@ -54,7 +61,7 @@ export default function SelectSubject() {
           <div className=" flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:px-20 md:py-10 ">
             <article className="flex flex-col gap-4 ">
               <div className="flex gap-1">
-                <p className="text-xl">1.</p>
+                <p className="text-xl">{questionIndex + 1}</p>
                 {/* @ts-ignore */}
                 <p className="text-xl"> {question} </p>
               </div>
@@ -79,13 +86,15 @@ export default function SelectSubject() {
             <div className="my-6 flex justify-between">
               <button
                 onClick={handlePrevQuestion}
-                className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md"
+                className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md disabled:bg-red-300 "
+                disabled={questionIndex === 0}
               >
                 Previous
               </button>
               <button
                 onClick={handleNextQuestion}
-                className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md"
+                className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md disabled:bg-red-300"
+                disabled={questionIndex + 1 === questions.length}
               >
                 Next
               </button>
@@ -100,7 +109,7 @@ export default function SelectSubject() {
                 className="h-10 w-10 rounded-md bg-primary text-sm text-primary-foreground"
                 onClick={() => handleRandomQuestion(index)}
               >
-                {index}
+                {index + 1}
               </button>
             ))}
           </div>
@@ -111,6 +120,12 @@ export default function SelectSubject() {
 
   return (
     <div className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
+      <button
+        onClick={getQuestions}
+        className="rounded-md bg-primary px-4 py-2 text-background "
+      >
+        Fetch Questions
+      </button>
       <p className="animate-spin">
         <Loader2Icon />
       </p>
