@@ -17,3 +17,18 @@
 //   .catch((error) => {
 //     console.log("error", error);
 //   });
+
+const questions = {
+  subject: "chemistry",
+  data: {
+    answer: "a",
+    examtype: "utme",
+    examyear: "2010",
+    id: 304,
+    image: "",
+    option: { a: "CHCI3", b: "CH2C2", c: "CH3CI", d: "CCI4", e: "CCI4" },
+    question: "The compound that is used as an anaesthetic is",
+    section: "",
+    solution: "",
+  },
+};
