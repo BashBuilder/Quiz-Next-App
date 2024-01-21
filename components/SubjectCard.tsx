@@ -1,6 +1,6 @@
 "use client";
 import { Loader2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function SelectSubject() {
   const [questions, setquestions] = useState([]);
@@ -26,19 +26,26 @@ export default function SelectSubject() {
       console.log("The error from fetching is ", error);
     }
   }
-  useEffect(() => {
-    getQuestions();
-    // eslint-disable-next-line
-  }, []);
 
-  console.log(questions);
+  const handleNextQuestion = () =>
+    setQuestionIndex((prevIndex) => prevIndex + 1);
+  const handlePrevQuestion = () =>
+    setQuestionIndex((prevIndex) => prevIndex - 1);
+  // @ts-ignore
+  const handleRandomQuestion = (index) => setQuestionIndex(index);
 
   if (questions.length !== 0) {
     // @ts-ignore
-    const { subject, option, question } = questions[0];
-    console.log(option);
+    const { subject, option, question } = questions[questionIndex];
+
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
+        <button
+          onClick={getQuestions}
+          className="rounded-md bg-primary px-4 py-2 "
+        >
+          Fetch Questions
+        </button>
         {/* the subject panel */}
         {/* <h5 className="text-right ">Time remaining : 2 min</h5> */}
         <h3 className="capitalize"> {subject} </h3>
@@ -67,12 +74,19 @@ export default function SelectSubject() {
                 }
               </div>
             </article>
+
             {/* the next and previos button goes here */}
             <div className="my-6 flex justify-between">
-              <button className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md">
+              <button
+                onClick={handlePrevQuestion}
+                className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md"
+              >
                 Previous
               </button>
-              <button className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md">
+              <button
+                onClick={handleNextQuestion}
+                className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md"
+              >
                 Next
               </button>
             </div>
@@ -84,6 +98,7 @@ export default function SelectSubject() {
               <button
                 key={index}
                 className="h-10 w-10 rounded-md bg-primary text-sm text-primary-foreground"
+                onClick={() => handleRandomQuestion(index)}
               >
                 {index}
               </button>
