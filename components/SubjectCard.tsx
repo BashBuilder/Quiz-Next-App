@@ -20,12 +20,15 @@ export default function SelectSubject() {
         },
       );
       const data = await response.json();
+      const currentQuestion = data.subject;
       // @ts-ignore
-      questions.push({ ...data.data[0], subject: data.subject });
+      setquestions({ subject: currentQuestion, data: data.data });
+      // questions.push({ ...data.data[0], subject: data.subject });
     } catch (error) {
       console.log("The error from fetching is ", error);
     }
   }
+
   console.log(questions);
 
   const handleNextQuestion = () =>
@@ -37,13 +40,14 @@ export default function SelectSubject() {
 
   if (questions.length !== 0) {
     // @ts-ignore
-    if (questionIndex + 1 > questions.length) {
+    if (questionIndex + 1 > questions.data.length) {
       setQuestionIndex(questionIndex);
     } else if (questionIndex < 0) {
       setQuestionIndex(0);
     }
 
-    const { subject, option, question } = questions[questionIndex];
+    // @ts-ignore
+    const { option, question } = questions.data[questionIndex];
 
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
@@ -55,7 +59,8 @@ export default function SelectSubject() {
         </button>
         {/* the subject panel */}
         {/* <h5 className="text-right ">Time remaining : 2 min</h5> */}
-        <h3 className="capitalize"> {subject} </h3>
+        {/* @ts-ignore */}
+        <h3 className="capitalize"> {questions.subject} </h3>
         <div className="flex w-4/5 max-w-5xl flex-col gap-4 md:gap-10">
           {/* the top question section */}
           <div className=" flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:px-20 md:py-10 ">
@@ -94,7 +99,8 @@ export default function SelectSubject() {
               <button
                 onClick={handleNextQuestion}
                 className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md disabled:bg-red-300"
-                disabled={questionIndex + 1 === questions.length}
+                // @ts-ignore
+                disabled={questionIndex + 1 === questions.data.length}
               >
                 Next
               </button>
@@ -103,10 +109,11 @@ export default function SelectSubject() {
 
           {/* the lower question navigation pane  */}
           <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
-            {questions.map((num, index) => (
+            {/* @ts-ignore */}
+            {questions.data.map((num, index) => (
               <button
                 key={index}
-                className="h-10 w-10 rounded-md bg-primary text-sm text-primary-foreground"
+                className={`h-10 w-10 rounded-md bg-slate-200 text-sm ${index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
                 onClick={() => handleRandomQuestion(index)}
               >
                 {index + 1}
