@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2Icon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Define the interfaces for your data types
 interface Data {
@@ -30,19 +30,19 @@ interface Question {
 }
 
 export default function SelectSubject() {
-  // Use the router to get the query parameters
-  // const router = useRouter();
-  // const { subject } = router.query;
-
   const [questions, setQuestions] = useState<Question | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [answers, setAnswers] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [scores, setScores] = useState(0);
+
   // Definining the function that fetches the questions
   async function getQuestions() {
     try {
       setIsLoading(true);
-      const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
+      // const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
+      const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
@@ -59,6 +59,7 @@ export default function SelectSubject() {
       console.error("The error from fetching is ", error);
     }
   }
+
   //defining some navigation methods
   const handleNextQuestion = () =>
     setQuestionIndex((prevIndex) => prevIndex + 1);
@@ -71,9 +72,25 @@ export default function SelectSubject() {
   const handleAnswerQuestion = (option: string, num: number) => {
     setSelectedOption((prevOption) => ({ ...prevOption, [num]: option }));
   };
-  questions?.data.map((item, index) => {
-    setAnswers((prevAns) => ({ ...prevAns, [index + 1]: item.answer }));
-  });
+
+  const handleSubmitQuestions = () => {
+    setIsSubmitted(true);
+    setIsLoading(true);
+    questions?.data.forEach((question, index) => {
+      // @ts-ignore
+      if (answers[index + 1] === selectedOption[index + 1]) {
+        setScores((prevScore) => prevScore++);
+      }
+    });
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    questions?.data.map((item, index) => {
+      setAnswers((prevAns) => ({ ...prevAns, [index + 1]: item.answer }));
+    });
+  }, [questions]);
 
   if (questions) {
     const currentQuestion = questions.data[questionIndex];
@@ -81,16 +98,28 @@ export default function SelectSubject() {
 
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
-        <button
-          onClick={getQuestions}
-          className="rounded-md bg-primary px-4 py-2 text-background "
-        >
-          {isLoading ? (
-            <Loader2Icon className="animate-spin" />
-          ) : (
-            "Fetch Questions"
-          )}
-        </button>
+        {isSubmitted ? (
+          <div>
+            <h2 className="text-center">{scores}</h2>
+            {/* <button
+              // onClick={handleSubmitQuestions}
+              className="rounded-md bg-primary px-4 py-2 text-background "
+            >
+              {isLoading ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                "View answers"
+              )}
+            </button> */}
+          </div>
+        ) : (
+          <button
+            onClick={handleSubmitQuestions}
+            className="rounded-md bg-primary px-4 py-2 text-background "
+          >
+            {isLoading ? <Loader2Icon className="animate-spin" /> : "Submit"}
+          </button>
+        )}
         {/* the subject panel */}
         <h3 className="capitalize"> {questions.subject} </h3>
 
