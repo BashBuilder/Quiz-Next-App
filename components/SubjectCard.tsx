@@ -76,15 +76,20 @@ export default function SelectSubject() {
   const handleSubmitQuestions = () => {
     setIsSubmitted(true);
     setIsLoading(true);
-    questions?.data.forEach((question, index) => {
+    questions?.data.map((question, index) => {
+      let counter = 0;
+      // @ts-ignore
+      const isCorrect = answers[index + 1] === selectedOption[index + 1];
       // @ts-ignore
       if (answers[index + 1] === selectedOption[index + 1]) {
-        setScores((prevScore) => prevScore++);
+        counter++;
+        setScores(counter);
       }
     });
-
     setIsLoading(false);
   };
+
+  console.log(selectedOption, answers);
 
   useEffect(() => {
     questions?.data.map((item, index) => {
@@ -101,16 +106,6 @@ export default function SelectSubject() {
         {isSubmitted ? (
           <div>
             <h2 className="text-center">{scores}</h2>
-            {/* <button
-              // onClick={handleSubmitQuestions}
-              className="rounded-md bg-primary px-4 py-2 text-background "
-            >
-              {isLoading ? (
-                <Loader2Icon className="animate-spin" />
-              ) : (
-                "View answers"
-              )}
-            </button> */}
           </div>
         ) : (
           <button
@@ -141,7 +136,7 @@ export default function SelectSubject() {
                       <button
                         key={index}
                         //@ts-ignore
-                        className={`rounded-md px-4 py-2 text-left  ${selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "hover:bg-slate-100"} `}
+                        className={`rounded-md px-4 py-2 text-left  ${isSubmitted ? (selectedOption[questionIndex + 1] === answers[questionIndex + 1] ? "bg-green-500" : "bg-red-500") : selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "hover:bg-slate-100"} `}
                         onClick={() => handleAnswerQuestion(opt, qIndex + 1)}
                       >
                         <span className="pr-4">{opt}.</span>
