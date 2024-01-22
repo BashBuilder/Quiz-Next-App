@@ -89,8 +89,6 @@ export default function SelectSubject() {
     setIsLoading(false);
   };
 
-  console.log(selectedOption, answers);
-
   useEffect(() => {
     questions?.data.map((item, index) => {
       setAnswers((prevAns) => ({ ...prevAns, [index + 1]: item.answer }));
@@ -132,18 +130,43 @@ export default function SelectSubject() {
                     <p className="text-xl"> {question} </p>
                   </div>
                   <div className="flex flex-col items-start gap-2">
-                    {Object.keys(option).map((opt: string, index) => (
-                      <button
-                        key={index}
-                        //@ts-ignore
-                        className={`rounded-md px-4 py-2 text-left  ${isSubmitted ? (selectedOption[questionIndex + 1] === answers[questionIndex + 1] ? "bg-green-500" : "bg-red-500") : selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "hover:bg-slate-100"} `}
-                        onClick={() => handleAnswerQuestion(opt, qIndex + 1)}
-                      >
-                        <span className="pr-4">{opt}.</span>
-                        {/* @ts-ignore */}
-                        {option[opt]}
-                      </button>
-                    ))}
+                    {Object.keys(option).map((opt: string, index) => {
+                      const selectedColor = "bg-primary text-white";
+                      const correctColor = "bg-green-500 text-white";
+                      const wrongColor = "bg-red-500 text-white";
+                      const normalColor = "hover:bg-slate-100";
+
+                      const correctSelectedOption =
+                        // @ts-ignore
+                        selectedOption[questionIndex + 1] ===
+                          // @ts-ignore
+                          answers[questionIndex + 1] &&
+                        // @ts-ignore
+                        answers[questionIndex + 1] === opt;
+
+                      const correctionColor = // @ts-ignore
+                        (selectedOption[questionIndex + 1] !==
+                          // @ts-ignore
+                          answers[questionIndex + 1] ||
+                          // @ts-ignore
+                          !selectedOption[questionIndex + 1]) &&
+                        // @ts-ignore
+                        answers[questionIndex + 1] === opt;
+
+                      return (
+                        <button
+                          key={index}
+                          //@ts-ignore
+                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "") : selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "hover:bg-slate-100"}}`}
+                          onClick={() => handleAnswerQuestion(opt, qIndex + 1)}
+                          disabled={isSubmitted}
+                        >
+                          <span className="pr-4">{opt}.</span>
+                          {/* @ts-ignore */}
+                          {option[opt]}
+                        </button>
+                      );
+                    })}
                   </div>
                 </article>
               );
