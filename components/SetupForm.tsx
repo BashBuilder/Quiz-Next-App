@@ -2,7 +2,7 @@ export default function SetupForm() {
   return (
     <section className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
       <form className="flex w-4/5 max-w-sm flex-col gap-4 rounded-xl bg-background px-4 md:p-10 ">
-        <h2>Quiz</h2>
+        <h2>CBT</h2>
         {/* Subject */}
         <div className="flex flex-col gap-2 ">
           <label htmlFor="">Subject</label>

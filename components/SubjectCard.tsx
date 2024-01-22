@@ -36,10 +36,12 @@ export default function SelectSubject() {
 
   const [questions, setQuestions] = useState<Question | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [answers, setAnswers] = useState({});
   // Definining the function that fetches the questions
   async function getQuestions() {
     try {
+      setIsLoading(true);
       const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
       const response = await fetch(url, {
         headers: {
@@ -52,6 +54,7 @@ export default function SelectSubject() {
       const data = await response.json();
       const currentQuestion = data.subject;
       setQuestions({ subject: currentQuestion, data: data.data });
+      setIsLoading(false);
     } catch (error) {
       console.error("The error from fetching is ", error);
     }
@@ -68,14 +71,13 @@ export default function SelectSubject() {
   const handleAnswerQuestion = (option: string, num: number) => {
     setSelectedOption((prevOption) => ({ ...prevOption, [num]: option }));
   };
+  questions?.data.map((item, index) => {
+    setAnswers((prevAns) => ({ ...prevAns, [index + 1]: item.answer }));
+  });
 
   if (questions) {
     const currentQuestion = questions.data[questionIndex];
     const { option, question } = currentQuestion;
-
-    // Define a function to handle the selection change
-    // @ts-ignore
-    console.log(selectedOption);
 
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
@@ -83,7 +85,11 @@ export default function SelectSubject() {
           onClick={getQuestions}
           className="rounded-md bg-primary px-4 py-2 text-background "
         >
-          Fetch Questions
+          {isLoading ? (
+            <Loader2Icon className="animate-spin" />
+          ) : (
+            "Fetch Questions"
+          )}
         </button>
         {/* the subject panel */}
         <h3 className="capitalize"> {questions.subject} </h3>
@@ -141,9 +147,6 @@ export default function SelectSubject() {
           {/* the lower question navigation pane  */}
           <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
             {questions.data.map((num, index) => {
-              // @ts-ignore
-              // console.log(selectedOption[index + 1] === undefined);
-              console.log(selectedOption[index + 1] !== undefined);
               return (
                 <button
                   key={index}
@@ -166,11 +169,12 @@ export default function SelectSubject() {
           onClick={getQuestions}
           className="rounded-md bg-primary px-4 py-2 text-background "
         >
-          Fetch Questions
+          {isLoading ? (
+            <Loader2Icon className="animate-spin" />
+          ) : (
+            "Fetch Questions"
+          )}
         </button>
-        <p className="animate-spin">
-          <Loader2Icon />
-        </p>
       </div>
     );
   }
