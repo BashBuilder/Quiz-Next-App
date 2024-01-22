@@ -15,7 +15,6 @@ interface Data {
   section: string;
   solution: string;
 }
-
 interface Option {
   a: string;
   b: string;
@@ -23,7 +22,6 @@ interface Option {
   d: string;
   e: string;
 }
-
 interface Question {
   subject: string;
   data: Data[];
@@ -31,44 +29,81 @@ interface Question {
 
 export default function SelectSubject() {
   const [questions, setQuestions] = useState<Question | null>(null);
+  const [allQuestions, setAllQuestions] = useState<Question[] | null>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [scores, setScores] = useState(0);
+  const [selectedOption, setSelectedOption] = useState({});
+  const [selectedSubject, setSelectedSubject] = useState<string>("english");
 
   // Definining the function that fetches the questions
   async function getQuestions() {
     try {
       setIsLoading(true);
-      // const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
-      const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-      const response = await fetch(url, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          AccessToken: "ALOC-caa562dfeb1a7de83a69",
-        },
-        method: "GET",
-      });
-      const data = await response.json();
-      const currentQuestion = data.subject;
-      setQuestions({ subject: currentQuestion, data: data.data });
+      const url1 = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
+      const url2 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
+      const url3 = `https://questions.aloc.com.ng/api/v2/m/10?subject=biology`;
+      const url4 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
+      const [response, response2, response3, response4] = await Promise.all([
+        fetch(url1, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            AccessToken: "ALOC-caa562dfeb1a7de83a69",
+          },
+          method: "GET",
+        }),
+        fetch(url2, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            AccessToken: "ALOC-caa562dfeb1a7de83a69",
+          },
+          method: "GET",
+        }),
+        fetch(url3, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            AccessToken: "ALOC-caa562dfeb1a7de83a69",
+          },
+          method: "GET",
+        }),
+        fetch(url4, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            AccessToken: "ALOC-caa562dfeb1a7de83a69",
+          },
+          method: "GET",
+        }),
+      ]);
+      const [data, data2, data3, data4] = await Promise.all([
+        response.json(),
+        response2.json(),
+        response3.json(),
+        response4.json(),
+      ]);
+      setQuestions({ subject: data.subject, data: data.data });
+      setAllQuestions([
+        { subject: data.subject, data: data.data },
+        { subject: data2.subject, data: data2.data },
+        { subject: data3.subject, data: data3.data },
+        { subject: data4.subject, data: data4.data },
+      ]);
       setIsLoading(false);
     } catch (error) {
       console.error("The error from fetching is ", error);
     }
   }
-
+  // ----------------------------------------------------------------
   //defining some navigation methods
-  const handleNextQuestion = () =>
-    setQuestionIndex((prevIndex) => prevIndex + 1);
-  const handlePrevQuestion = () =>
-    setQuestionIndex((prevIndex) => prevIndex - 1);
+  const handleNextQuestion = (num: number) =>
+    setQuestionIndex((prevIndex) => prevIndex + num);
   const handleRandomQuestion = (index: number) => setQuestionIndex(index);
-
-  const [selectedOption, setSelectedOption] = useState({});
-
+  // ----------------------------------------------------------------
   const handleAnswerQuestion = (option: string, num: number) => {
     setSelectedOption((prevOption) => ({ ...prevOption, [num]: option }));
   };
@@ -76,8 +111,8 @@ export default function SelectSubject() {
   const handleSubmitQuestions = () => {
     setIsSubmitted(true);
     setIsLoading(true);
+    let counter = 0;
     questions?.data.map((question, index) => {
-      let counter = 0;
       // @ts-ignore
       const isCorrect = answers[index + 1] === selectedOption[index + 1];
       // @ts-ignore
@@ -95,12 +130,20 @@ export default function SelectSubject() {
     });
   }, [questions]);
 
-  if (questions) {
+  useEffect(() => {
+    const newQuestions = allQuestions?.filter(
+      (questions) => questions.subject === selectedSubject,
+    )[0];
+    newQuestions && setQuestions(newQuestions);
+    // eslint-disable-next-line
+  }, [selectedSubject]);
+
+  if (questions && allQuestions) {
     const currentQuestion = questions.data[questionIndex];
     const { option, question } = currentQuestion;
 
     return (
-      <section className="flex min-h-screen flex-col items-center gap-4 py-10 md:py-20 ">
+      <section className="flex min-h-screen flex-col items-center gap-4 py-6 md:py-20 ">
         {isSubmitted ? (
           <div>
             <h2 className="text-center">{scores}</h2>
@@ -114,11 +157,21 @@ export default function SelectSubject() {
           </button>
         )}
         {/* the subject panel */}
-        <h3 className="capitalize"> {questions.subject} </h3>
 
-        <div className="flex w-4/5 max-w-5xl flex-col gap-4 md:gap-10">
+        <div className="flex w-4/5 max-w-5xl flex-col">
+          <div className="mb-2 flex flex-wrap gap-2 ">
+            {allQuestions.map((question, index) => (
+              <button
+                key={index}
+                className={`" rounded-sm  px-4 py-2 capitalize hover:shadow-lg ${question.subject === selectedSubject ? "bg-primary" : "bg-background"} `}
+                onClick={() => setSelectedSubject(question.subject)}
+              >
+                {question.subject}
+              </button>
+            ))}
+          </div>
           {/* the top question section */}
-          <div className=" flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:px-20 md:py-10 ">
+          <div className=" mb-4 flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:mb-10 md:px-20 md:py-10  ">
             {questions.data.map((item, qIndex) => {
               return (
                 <article
@@ -157,7 +210,7 @@ export default function SelectSubject() {
                         <button
                           key={index}
                           //@ts-ignore
-                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "") : selectedOption[questionIndex + 1] === opt ? "bg-primary text-white" : "hover:bg-slate-100"}}`}
+                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : selectedOption[questionIndex + 1] === opt ? selectedColor : normalColor}}`}
                           onClick={() => handleAnswerQuestion(opt, qIndex + 1)}
                           disabled={isSubmitted}
                         >
@@ -172,17 +225,17 @@ export default function SelectSubject() {
               );
             })}
 
-            {/* the next and previos button goes here */}
+            {/* the next and previous button goes here */}
             <div className="my-6 flex justify-between">
               <button
-                onClick={handlePrevQuestion}
+                onClick={() => handleNextQuestion(-1)}
                 className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md disabled:bg-red-300 "
                 disabled={questionIndex === 0}
               >
                 Previous
               </button>
               <button
-                onClick={handleNextQuestion}
+                onClick={() => handleNextQuestion(1)}
                 className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-700 hover:shadow-md disabled:bg-red-300"
                 disabled={questionIndex + 1 === questions.data.length}
               >
@@ -194,11 +247,16 @@ export default function SelectSubject() {
           {/* the lower question navigation pane  */}
           <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
             {questions.data.map((num, index) => {
+              const correctSelectedOption =
+                // @ts-ignore
+                selectedOption[index + 1] ===
+                // @ts-ignore
+                answers[index + 1];
               return (
                 <button
                   key={index}
                   // @ts-ignore
-                  className={`h-10 w-10 rounded-md text-sm  ${selectedOption[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
+                  className={`h-10 w-10 rounded-md text-sm  ${isSubmitted ? (correctSelectedOption ? "bg-green-500 text-white" : "bg-red-500 text-white") : selectedOption[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
                   onClick={() => handleRandomQuestion(index)}
                 >
                   {index + 1}
