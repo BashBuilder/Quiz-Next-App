@@ -44,9 +44,13 @@ export default function SelectSubject() {
       setIsLoading(true);
       const url1 = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
       const url2 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-      const url3 = `https://questions.aloc.com.ng/api/v2/m/10?subject=biology`;
-      const url4 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-      const [response, response2, response3, response4] = await Promise.all([
+      // const url3 = `https://questions.aloc.com.ng/api/v2/m/10?subject=biology`;
+      // const url4 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
+      const [
+        response,
+        response2,
+        // response3, response4
+      ] = await Promise.all([
         fetch(url1, {
           headers: {
             Accept: "application/json",
@@ -63,35 +67,39 @@ export default function SelectSubject() {
           },
           method: "GET",
         }),
-        fetch(url3, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            AccessToken: "ALOC-caa562dfeb1a7de83a69",
-          },
-          method: "GET",
-        }),
-        fetch(url4, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            AccessToken: "ALOC-caa562dfeb1a7de83a69",
-          },
-          method: "GET",
-        }),
+        // fetch(url3, {
+        //   headers: {
+        //     Accept: "application/json",
+        //     "Content-Type": "application/json",
+        //     AccessToken: "ALOC-caa562dfeb1a7de83a69",
+        //   },
+        //   method: "GET",
+        // }),
+        // fetch(url4, {
+        //   headers: {
+        //     Accept: "application/json",
+        //     "Content-Type": "application/json",
+        //     AccessToken: "ALOC-caa562dfeb1a7de83a69",
+        //   },
+        //   method: "GET",
+        // }),
       ]);
-      const [data, data2, data3, data4] = await Promise.all([
+      const [
+        data,
+        data2,
+        // data3, data4
+      ] = await Promise.all([
         response.json(),
         response2.json(),
-        response3.json(),
-        response4.json(),
+        // response3.json(),
+        // response4.json(),
       ]);
       setQuestions({ subject: data.subject, data: data.data });
       setAllQuestions([
         { subject: data.subject, data: data.data },
         { subject: data2.subject, data: data2.data },
-        { subject: data3.subject, data: data3.data },
-        { subject: data4.subject, data: data4.data },
+        // { subject: data3.subject, data: data3.data },
+        // { subject: data4.subject, data: data4.data },
       ]);
       setIsLoading(false);
     } catch (error) {
@@ -112,11 +120,31 @@ export default function SelectSubject() {
   ) => {
     setSelectedOption((prevOption) => ({
       ...prevOption,
-      // @ts-ignore
-      [subject]: { ...prevOption[subject], [num]: option },
+      [subject]: {
+        // @ts-ignore
+        ...(prevOption[subject] || {}), // Copy existing options for the subject
+        [num]: option, // Update or add new option for the given num
+      },
     }));
   };
-  console.log(selectedOption);
+
+  // get all correct options
+  useEffect(() => {
+    const newAnswers = {};
+    allQuestions?.forEach((questions) => {
+      const sub = questions.subject;
+      let ans = {};
+      questions?.data.forEach((item, index) => {
+        ans = { ...ans, [index + 1]: item.answer };
+      });
+      // @ts-ignore
+      newAnswers[sub] = { ...ans };
+    });
+    setAnswers(newAnswers);
+    console.log(answers);
+    console.log(selectedOption);
+    // eslint-disable-next-line
+  }, [selectedOption]);
 
   const handleSubmitQuestions = () => {
     setIsSubmitted(true);
@@ -133,12 +161,6 @@ export default function SelectSubject() {
     });
     setIsLoading(false);
   };
-
-  useEffect(() => {
-    questions?.data.map((item, index) => {
-      setAnswers((prevAns) => ({ ...prevAns, [index + 1]: item.answer }));
-    });
-  }, [questions]);
 
   useEffect(() => {
     const newQuestions = allQuestions?.filter(
@@ -222,7 +244,7 @@ export default function SelectSubject() {
                           //@ts-ignore
                           className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : selectedOption[questionIndex + 1] === opt ? selectedColor : normalColor}}`}
                           onClick={() =>
-                            handleAnswerQuestion(opt, qIndex + 1, id, subject)
+                            handleAnswerQuestion(opt, qIndex + 1, subject)
                           }
                           disabled={isSubmitted}
                         >
