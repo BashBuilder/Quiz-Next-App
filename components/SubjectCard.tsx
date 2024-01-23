@@ -141,8 +141,8 @@ export default function SelectSubject() {
       newAnswers[sub] = { ...ans };
     });
     setAnswers(newAnswers);
-    console.log(answers);
-    console.log(selectedOption);
+    // console.log(answers);
+    // console.log(selectedOption);
     // eslint-disable-next-line
   }, [selectedOption]);
 
@@ -221,6 +221,14 @@ export default function SelectSubject() {
                       const correctColor = "bg-green-500 text-white";
                       const wrongColor = "bg-red-500 text-white";
                       const normalColor = "hover:bg-slate-100";
+
+                      // @ts-ignore
+                      const test = selectedOption[subject];
+
+                      if (test) {
+                        console.log(test[questionIndex + 1] === opt);
+                      }
+                      // @ts-ignore
                       const correctSelectedOption =
                         // @ts-ignore
                         selectedOption[questionIndex + 1] ===
@@ -242,7 +250,7 @@ export default function SelectSubject() {
                         <button
                           key={index}
                           //@ts-ignore
-                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : selectedOption[questionIndex + 1] === opt ? selectedColor : normalColor}}`}
+                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : test ? (test[questionIndex + 1] === opt ? selectedColor : normalColor) : ""}`}
                           onClick={() =>
                             handleAnswerQuestion(opt, qIndex + 1, subject)
                           }
