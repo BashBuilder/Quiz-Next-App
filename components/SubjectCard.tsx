@@ -103,10 +103,23 @@ export default function SelectSubject() {
   const handleNextQuestion = (num: number) =>
     setQuestionIndex((prevIndex) => prevIndex + num);
   const handleRandomQuestion = (index: number) => setQuestionIndex(index);
+
   // ----------------------------------------------------------------
-  const handleAnswerQuestion = (option: string, num: number) => {
-    setSelectedOption((prevOption) => ({ ...prevOption, [num]: option }));
+  const handleAnswerQuestion = (
+    option: string,
+    num: number,
+    id: number,
+    subject: string,
+  ) => {
+    setSelectedOption((prevOption) => ({
+      ...prevOption,
+      [num]: option,
+      id,
+      subject,
+    }));
   };
+
+  console.log(selectedOption);
 
   const handleSubmitQuestions = () => {
     setIsSubmitted(true);
@@ -140,7 +153,8 @@ export default function SelectSubject() {
 
   if (questions && allQuestions) {
     const currentQuestion = questions.data[questionIndex];
-    const { option, question } = currentQuestion;
+    const { option, question, id } = currentQuestion;
+    const { subject } = questions;
 
     return (
       <section className="flex min-h-screen flex-col items-center gap-4 py-6 md:py-20 ">
@@ -188,7 +202,6 @@ export default function SelectSubject() {
                       const correctColor = "bg-green-500 text-white";
                       const wrongColor = "bg-red-500 text-white";
                       const normalColor = "hover:bg-slate-100";
-
                       const correctSelectedOption =
                         // @ts-ignore
                         selectedOption[questionIndex + 1] ===
@@ -211,7 +224,9 @@ export default function SelectSubject() {
                           key={index}
                           //@ts-ignore
                           className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : selectedOption[questionIndex + 1] === opt ? selectedColor : normalColor}}`}
-                          onClick={() => handleAnswerQuestion(opt, qIndex + 1)}
+                          onClick={() =>
+                            handleAnswerQuestion(opt, qIndex + 1, id, subject)
+                          }
                           disabled={isSubmitted}
                         >
                           <span className="pr-4">{opt}.</span>
