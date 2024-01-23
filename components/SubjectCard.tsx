@@ -108,17 +108,14 @@ export default function SelectSubject() {
   const handleAnswerQuestion = (
     option: string,
     num: number,
-    id: number,
     subject: string,
   ) => {
     setSelectedOption((prevOption) => ({
       ...prevOption,
-      [num]: option,
-      id,
-      subject,
+      // @ts-ignore
+      [subject]: { ...prevOption[subject], [num]: option },
     }));
   };
-
   console.log(selectedOption);
 
   const handleSubmitQuestions = () => {
