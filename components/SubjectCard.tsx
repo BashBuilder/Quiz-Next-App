@@ -95,24 +95,36 @@ export default function SelectSubject() {
         // response4.json(),
       ]);
       setQuestions({ subject: data.subject, data: data.data });
-      setAllQuestions([
+      const q = [
         { subject: data.subject, data: data.data },
         { subject: data2.subject, data: data2.data },
         // { subject: data3.subject, data: data3.data },
         // { subject: data4.subject, data: data4.data },
-      ]);
+      ];
+      setAllQuestions(q);
+      localStorage.setItem("allQuestions", JSON.stringify(q));
       setIsLoading(false);
     } catch (error) {
       console.error("The error from fetching is ", error);
     }
   }
+  // fetch questions from local storage
+  useEffect(() => {
+    const q = localStorage.getItem("allQuestions");
+    // @ts-ignore
+    const t = JSON.parse(q);
+    // @ts-ignore
+    setAllQuestions(t);
+    setQuestions(t[0]);
+  }, []);
+
   // ----------------------------------------------------------------
   //defining some navigation methods
   const handleNextQuestion = (num: number) =>
     setQuestionIndex((prevIndex) => prevIndex + num);
   const handleRandomQuestion = (index: number) => setQuestionIndex(index);
 
-  // ----------------------------------------------------------------
+  // -function that saves the selected options
   const handleAnswerQuestion = (
     option: string,
     num: number,
@@ -127,25 +139,28 @@ export default function SelectSubject() {
       },
     }));
   };
-
   // get all correct options
   useEffect(() => {
     const newAnswers = {};
+    const newOptions = {};
     allQuestions?.forEach((questions) => {
       const sub = questions.subject;
       let ans = {};
+      let setOpt = {};
       questions?.data.forEach((item, index) => {
         ans = { ...ans, [index + 1]: item.answer };
+        setOpt = { ...setOpt, [index + 1]: "" };
       });
       // @ts-ignore
       newAnswers[sub] = { ...ans };
+      // @ts-ignore
+      newOptions[sub] = { ...setOpt };
     });
     setAnswers(newAnswers);
-    console.log(answers);
-    console.log(selectedOption);
-    // eslint-disable-next-line
-  }, [selectedOption, allQuestions]);
+    setSelectedOption(newOptions);
+  }, [allQuestions]);
 
+  // submit question and get the correct answers
   const handleSubmitQuestions = () => {
     setIsSubmitted(true);
     setIsLoading(true);
@@ -156,24 +171,23 @@ export default function SelectSubject() {
       // @ts-ignore
       Object.keys(answers[subject]).forEach((question) => {
         // @ts-ignore
+        const ans = selectedOption[subject][question];
+        // @ts-ignore
         const answer = answers[subject][question];
         // @ts-ignore
-        const selectedOption = selectedOptions[subject][question];
-
+        const selectedOpt = selectedOption[subject][question];
         // Compare selected option with correct answer
-        if (selectedOption === answer) {
+        if (selectedOpt === answer) {
           counter++;
         }
       });
     });
-
     setScores(counter);
-
     setIsLoading(false);
   };
-
   console.log(scores);
 
+  // switch between questions
   useEffect(() => {
     const newQuestions = allQuestions?.filter(
       (questions) => questions.subject === selectedSubject,
