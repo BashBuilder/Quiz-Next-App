@@ -141,26 +141,38 @@ export default function SelectSubject() {
       newAnswers[sub] = { ...ans };
     });
     setAnswers(newAnswers);
-    // console.log(answers);
-    // console.log(selectedOption);
+    console.log(answers);
+    console.log(selectedOption);
     // eslint-disable-next-line
-  }, [selectedOption]);
+  }, [selectedOption, allQuestions]);
 
   const handleSubmitQuestions = () => {
     setIsSubmitted(true);
     setIsLoading(true);
     let counter = 0;
-    questions?.data.map((question, index) => {
+    // Iterate over subjects
+    Object.keys(answers).forEach((subject) => {
+      // Iterate over questions within each subject
       // @ts-ignore
-      const isCorrect = answers[index + 1] === selectedOption[index + 1];
-      // @ts-ignore
-      if (answers[index + 1] === selectedOption[index + 1]) {
-        counter++;
-        setScores(counter);
-      }
+      Object.keys(answers[subject]).forEach((question) => {
+        // @ts-ignore
+        const answer = answers[subject][question];
+        // @ts-ignore
+        const selectedOption = selectedOptions[subject][question];
+
+        // Compare selected option with correct answer
+        if (selectedOption === answer) {
+          counter++;
+        }
+      });
     });
+
+    setScores(counter);
+
     setIsLoading(false);
   };
+
+  console.log(scores);
 
   useEffect(() => {
     const newQuestions = allQuestions?.filter(
@@ -221,28 +233,31 @@ export default function SelectSubject() {
                       const correctColor = "bg-green-500 text-white";
                       const wrongColor = "bg-red-500 text-white";
                       const normalColor = "hover:bg-slate-100";
-
                       // @ts-ignore
                       const test = selectedOption[subject];
 
-                      if (test) {
-                        console.log(test[questionIndex + 1] === opt);
-                      }
                       // @ts-ignore
                       const correctSelectedOption =
+                        test &&
                         // @ts-ignore
-                        selectedOption[questionIndex + 1] ===
+                        test[questionIndex + 1] ===
                           // @ts-ignore
                           answers[questionIndex + 1] &&
                         // @ts-ignore
                         answers[questionIndex + 1] === opt;
 
-                      const correctionColor = // @ts-ignore
-                        (selectedOption[questionIndex + 1] !==
+                      const correctionOption =
+                        test &&
+                        // @ts-ignore
+                        (test[questionIndex + 1] !==
                           // @ts-ignore
                           answers[questionIndex + 1] ||
                           // @ts-ignore
-                          !selectedOption[questionIndex + 1]) &&
+                          !test[questionIndex + 1]) &&
+                        // @ts-ignore
+                        answers[questionIndex + 1] === opt;
+
+                      const noSelectedOption =
                         // @ts-ignore
                         answers[questionIndex + 1] === opt;
 
@@ -250,7 +265,7 @@ export default function SelectSubject() {
                         <button
                           key={index}
                           //@ts-ignore
-                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (correctSelectedOption ? correctColor : correctionColor ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : test ? (test[questionIndex + 1] === opt ? selectedColor : normalColor) : ""}`}
+                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (test ? (correctSelectedOption ? correctColor : correctionOption ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : noSelectedOption ? wrongColor : "") : test ? (test[questionIndex + 1] === opt ? selectedColor : normalColor) : ""}`}
                           onClick={() =>
                             handleAnswerQuestion(opt, qIndex + 1, subject)
                           }
@@ -289,6 +304,9 @@ export default function SelectSubject() {
           {/* the lower question navigation pane  */}
           <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
             {questions.data.map((num, index) => {
+              // @ts-ignore
+              const test = selectedOption[subject];
+
               const correctSelectedOption =
                 // @ts-ignore
                 selectedOption[index + 1] ===
@@ -298,7 +316,7 @@ export default function SelectSubject() {
                 <button
                   key={index}
                   // @ts-ignore
-                  className={`h-10 w-10 rounded-md text-sm  ${isSubmitted ? (correctSelectedOption ? "bg-green-500 text-white" : "bg-red-500 text-white") : selectedOption[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
+                  className={`h-10 w-10 rounded-md text-sm  ${isSubmitted ? (correctSelectedOption ? "bg-green-500 text-white" : "bg-red-500 text-white") : test ? (test[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200") : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
                   onClick={() => handleRandomQuestion(index)}
                 >
                   {index + 1}
