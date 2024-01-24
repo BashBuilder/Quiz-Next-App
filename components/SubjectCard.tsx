@@ -165,13 +165,13 @@ export default function SelectSubject() {
     setIsSubmitted(true);
     setIsLoading(true);
     let counter = 0;
+    const subjectScores = {};
     // Iterate over subjects
     Object.keys(answers).forEach((subject) => {
+      let subjectScore = 0;
       // Iterate over questions within each subject
       // @ts-ignore
       Object.keys(answers[subject]).forEach((question) => {
-        // @ts-ignore
-        const ans = selectedOption[subject][question];
         // @ts-ignore
         const answer = answers[subject][question];
         // @ts-ignore
@@ -179,13 +179,18 @@ export default function SelectSubject() {
         // Compare selected option with correct answer
         if (selectedOpt === answer) {
           counter++;
+          subjectScore++;
         }
       });
+      // Store subject score
+      // @ts-ignore
+      subjectScores[subject] = subjectScore;
     });
     setScores(counter);
     setIsLoading(false);
+
+    console.log(counter, subjectScores);
   };
-  console.log(scores);
 
   // switch between questions
   useEffect(() => {
@@ -202,22 +207,29 @@ export default function SelectSubject() {
     const { subject } = questions;
 
     return (
-      <section className="flex min-h-screen flex-col items-center gap-4 py-6 md:py-20 ">
+      <section className="flex min-h-screen flex-col gap-4 py-6 md:py-20 ">
         {isSubmitted ? (
           <div>
             <h2 className="text-center">{scores}</h2>
           </div>
         ) : (
-          <button
-            onClick={handleSubmitQuestions}
-            className="rounded-md bg-primary px-4 py-2 text-background "
-          >
-            {isLoading ? <Loader2Icon className="animate-spin" /> : "Submit"}
-          </button>
+          <div className="mx-auto flex w-4/5 max-w-5xl flex-col">
+            <div>
+              <p className="text-right">
+                <span>Time Remaining </span> 2:00:00
+              </p>
+            </div>
+            <button
+              onClick={handleSubmitQuestions}
+              className="mx-auto rounded-md bg-primary px-4 py-2 text-background "
+            >
+              {isLoading ? <Loader2Icon className="animate-spin" /> : "Submit"}
+            </button>
+          </div>
         )}
         {/* the subject panel */}
 
-        <div className="flex w-4/5 max-w-5xl flex-col">
+        <div className="mx-auto flex w-4/5 max-w-5xl flex-col ">
           <div className="mb-2 flex flex-wrap gap-2 ">
             {allQuestions.map((question, index) => (
               <button
@@ -249,37 +261,37 @@ export default function SelectSubject() {
                       const normalColor = "hover:bg-slate-100";
                       // @ts-ignore
                       const test = selectedOption[subject];
+                      // @ts-ignore
+                      const sub = answers[subject];
 
                       // @ts-ignore
                       const correctSelectedOption =
                         test &&
+                        sub &&
                         // @ts-ignore
                         test[questionIndex + 1] ===
                           // @ts-ignore
-                          answers[questionIndex + 1] &&
+                          sub[questionIndex + 1] &&
                         // @ts-ignore
-                        answers[questionIndex + 1] === opt;
+                        sub[questionIndex + 1] === opt;
 
                       const correctionOption =
                         test &&
+                        sub &&
                         // @ts-ignore
                         (test[questionIndex + 1] !==
                           // @ts-ignore
-                          answers[questionIndex + 1] ||
+                          sub[questionIndex + 1] ||
                           // @ts-ignore
                           !test[questionIndex + 1]) &&
                         // @ts-ignore
-                        answers[questionIndex + 1] === opt;
-
-                      const noSelectedOption =
-                        // @ts-ignore
-                        answers[questionIndex + 1] === opt;
+                        sub[questionIndex + 1] === opt;
 
                       return (
                         <button
                           key={index}
                           //@ts-ignore
-                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? (test ? (correctSelectedOption ? correctColor : correctionOption ? wrongColor : selectedOption[questionIndex + 1] === opt ? selectedColor : "") : noSelectedOption ? wrongColor : "") : test ? (test[questionIndex + 1] === opt ? selectedColor : normalColor) : ""}`}
+                          className={`rounded-md px-4 py-2 text-left ${isSubmitted ? test && sub && (correctSelectedOption ? correctColor : correctionOption ? wrongColor : selectedOption[questionIndex + 1] === opt && selectedColor) : test && test[questionIndex + 1] === opt ? selectedColor : normalColor}`}
                           onClick={() =>
                             handleAnswerQuestion(opt, qIndex + 1, subject)
                           }
@@ -320,17 +332,21 @@ export default function SelectSubject() {
             {questions.data.map((num, index) => {
               // @ts-ignore
               const test = selectedOption[subject];
+              // @ts-ignore
+              const sub = answers[subject];
 
               const correctSelectedOption =
+                test &&
+                sub &&
                 // @ts-ignore
-                selectedOption[index + 1] ===
-                // @ts-ignore
-                answers[index + 1];
+                test[index + 1] ===
+                  // @ts-ignore
+                  sub[index + 1];
               return (
                 <button
                   key={index}
                   // @ts-ignore
-                  className={`h-10 w-10 rounded-md text-sm  ${isSubmitted ? (correctSelectedOption ? "bg-green-500 text-white" : "bg-red-500 text-white") : test ? (test[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200") : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
+                  className={`h-10 w-10 rounded-md text-sm  ${isSubmitted ? test && sub && (correctSelectedOption ? "bg-green-500 text-white" : "bg-red-500 text-white") : test ? (test[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200") : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
                   onClick={() => handleRandomQuestion(index)}
                 >
                   {index + 1}
