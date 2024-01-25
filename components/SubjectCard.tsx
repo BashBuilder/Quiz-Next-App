@@ -2,6 +2,13 @@
 
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  increment,
+  decrement,
+  incrementByAmount,
+} from "@/app/GlobalRedux/Features/counter/counterSlice";
+import { Rootstate } from "@/app/GlobalRedux/store";
 
 // Define the interfaces for your data types
 interface Data {
@@ -43,6 +50,9 @@ export default function SelectSubject() {
   const [answers, setAnswers] = useState({});
   const [selectedOption, setSelectedOption] = useState({});
   const [cbtTime, setCbtTime] = useState<CbtTime | null>();
+
+  const count = useSelector((state: Rootstate) => state.counter.value);
+  const dispatch = useDispatch();
 
   // Definining the function that fetches the questions
   async function getQuestions() {
@@ -270,6 +280,13 @@ export default function SelectSubject() {
         {/* the subject panel */}
 
         <div className="mx-auto flex w-4/5 max-w-5xl flex-col ">
+          <button onClick={() => dispatch(increment())}>Increment</button>
+          <span> {count} </span>
+          <button onClick={() => dispatch(decrement())}>Decrement</button>
+          <button onClick={() => dispatch(incrementByAmount(2))}>
+            Increment by 2
+          </button>
+
           <div className="mb-2 flex flex-wrap gap-2 ">
             {allQuestions.map((question, index) => (
               <button
