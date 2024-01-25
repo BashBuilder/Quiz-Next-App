@@ -7,7 +7,7 @@ import {
   increment,
   decrement,
   incrementByAmount,
-} from "@/app/GlobalRedux/Features/counter/counterSlice";
+} from "@/app/GlobalRedux/Features/counterSlice";
 import { Rootstate } from "@/app/GlobalRedux/store";
 
 // Define the interfaces for your data types

@@ -1,57 +1,106 @@
+"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { SelectGroup } from "@radix-ui/react-select";
+import { LoaderIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+
 export default function SetupForm() {
+  const CbtSchema = z.object({
+    examType: z.string(),
+  });
+  type CbtShemaType = z.infer<typeof CbtSchema>;
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<CbtShemaType>({ resolver: zodResolver(CbtSchema) });
+
+  const startExam: SubmitHandler<CbtShemaType> = (data) => {
+    console.log(data);
+    console.log("submitted");
+  };
+
   return (
     <section className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
-      <form className="flex w-4/5 max-w-sm flex-col gap-4 rounded-xl bg-background px-4 md:p-10 ">
-        <h2>CBT</h2>
-        {/* Subject */}
-        <div className="flex flex-col gap-2 ">
-          <label htmlFor="">Subject</label>
-          <select
-            name="Subject"
-            id="subject"
-            className="rounded-md bg-backgroundMain p-2 "
-          >
-            <option value="physics">Physics</option>
-            <option value="chemistry">Chemistry</option>
-            <option value="biology">Biology</option>
-          </select>
-        </div>
-        {/* Amount */}
-        <div className="flex flex-col gap-2 ">
-          <label htmlFor=""> Number of questions</label>
-          <input
-            type="number"
-            id="amount"
-            name="amount"
-            className="rounded-md bg-backgroundMain p-2 "
-            min={40}
-            max={50}
+      <form
+        onSubmit={handleSubmit(startExam)}
+        className="flex w-4/5 max-w-sm flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-6 "
+      >
+        <div>
+          <Image
+            src="/img/jamb.png"
+            alt="jamb"
+            width={200}
+            height={200}
+            className="mx-auto w-40"
+            priority
           />
         </div>
-
-        {/* Year of examination */}
-        <div className="flex flex-col gap-2 ">
-          <label htmlFor="year">Year</label>
-          <select
-            name="year"
-            id="year"
-            className="rounded-md bg-backgroundMain p-2 "
-          >
-            <option value="2022 ">2022</option>
-            <option value="2022">2021</option>
-            <option value="2022">2020</option>
-            <option value="2022">2019</option>
-            <option value="2022">2018</option>
-          </select>
+        <h3 className="text-center"> JAMB CBT</h3>
+        {/* Exam Type */}
+        <div className="mt-2 flex flex-col gap-2 ">
+          <label className="font-semibold">Exam Type</label>
+          <Controller
+            control={control}
+            name="examType"
+            render={({ field }) => {
+              return (
+                <Select {...field} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder="Select an Exam"
+                      defaultValue="jamb"
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="jamb">Jamb</SelectItem>
+                      <SelectItem value="waec">Waec</SelectItem>
+                      <SelectItem value="neco">Neco</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              );
+            }}
+          />
         </div>
-        {/* {
-          <p>Can't generate questions, please try again later</p>
-        } */}
-        <button
-          type="submit"
-          className="rounded-lg bg-primary px-4 py-2 text-background "
-        >
-          Start
+        {/* Subjects */}
+        <div className="mt-2 flex flex-col gap-2 ">
+          <label className="font-semibold">Subjects</label>
+          <ul>
+            <li>
+              <p> ✅ Use of English</p>
+            </li>
+          </ul>
+        </div>
+        {errors.examType && (
+          <p className="text-red-500"> {errors.examType.message} </p>
+        )}
+        <button type="submit" className="bg-primary text-background ">
+          {isSubmitting ? (
+            <LoaderIcon className="mx-auto animate-spin " />
+          ) : (
+            "Start"
+          )}
         </button>
       </form>
     </section>

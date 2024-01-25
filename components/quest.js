@@ -56,3 +56,46 @@ const questions = {
       [questionIndex]: value,
     }));
   };
+
+  
+  {/* Subject */}
+        {/* <div className="flex flex-col gap-2 ">
+          <label htmlFor="">Subject</label>
+          <select
+            name="Subject"
+            id="subject"
+            className="rounded-md bg-backgroundMain p-2 "
+          >
+            <option value="physics">Jamb</option>
+            <option value="chemistry">Waec</option>
+            <option value="biology">Biology</option>
+          </select>
+        </div> */}
+        {/* Amount */}
+        {/* <div className="flex flex-col gap-2 ">
+          <label htmlFor=""> Number of questions</label>
+          <input
+            type="number"
+            id="amount"
+            name="amount"
+            className="rounded-md bg-backgroundMain p-2 "
+            min={40}
+            max={50}
+          />
+        </div> */}
+
+        {/* Year of examination */}
+        {/* <div className="flex flex-col gap-2 ">
+          <label htmlFor="year">Year</label>
+          <select
+            name="year"
+            id="year"
+            className="rounded-md bg-backgroundMain p-2 "
+          >
+            <option value="2022 ">2022</option>
+            <option value="2022">2021</option>
+            <option value="2022">2020</option>
+            <option value="2022">2019</option>
+            <option value="2022">2018</option>
+          </select>
+        </div> */}
