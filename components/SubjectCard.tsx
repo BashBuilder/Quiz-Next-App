@@ -26,17 +26,23 @@ interface Question {
   subject: string;
   data: Data[];
 }
+interface CbtTime {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
 
 export default function SelectSubject() {
   const [questions, setQuestions] = useState<Question | null>(null);
   const [allQuestions, setAllQuestions] = useState<Question[] | null>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [answers, setAnswers] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [scores, setScores] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<string>("chemistry");
+  const [answers, setAnswers] = useState({});
   const [selectedOption, setSelectedOption] = useState({});
-  const [selectedSubject, setSelectedSubject] = useState<string>("english");
+  const [cbtTime, setCbtTime] = useState<CbtTime | null>();
 
   // Definining the function that fetches the questions
   async function getQuestions() {
@@ -116,6 +122,10 @@ export default function SelectSubject() {
     // @ts-ignore
     setAllQuestions(t);
     setQuestions(t[0]);
+
+    // const duration = 3600; // 3600 seconds = 1 hour
+    const timer = countdownTimer();
+    // eslint-disable-next-line
   }, []);
 
   // ----------------------------------------------------------------
@@ -201,6 +211,29 @@ export default function SelectSubject() {
     // eslint-disable-next-line
   }, [selectedSubject]);
 
+  // the timer function
+  // @ts-ignore
+  function countdownTimer(durationInSeconds = 7200) {
+    let timer = durationInSeconds;
+
+    const countdown = setInterval(() => {
+      if (timer <= 0) {
+        clearInterval(countdown);
+        handleSubmitQuestions();
+      } else {
+        const hours = Math.floor(timer / 3600);
+        const minutes = Math.floor((timer % 3600) / 60);
+        const seconds = timer % 60;
+        setCbtTime({ hours, minutes, seconds });
+        timer--;
+      }
+    }, 1000); // Update every 1000 milliseconds (1 second)
+    return countdown;
+  }
+
+  const duration = 3600; // 3600 seconds = 1 hour
+  // const timer = countdownTimer(duration);
+
   if (questions && allQuestions) {
     const currentQuestion = questions.data[questionIndex];
     const { option, question, id } = currentQuestion;
@@ -214,10 +247,17 @@ export default function SelectSubject() {
           </div>
         ) : (
           <div className="mx-auto flex w-4/5 max-w-5xl flex-col">
-            <div>
-              <p className="text-right">
-                <span>Time Remaining </span> 2:00:00
-              </p>
+            <div className="mb-4 flex items-center justify-end gap-1">
+              <h6>Time Remaining </h6>
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
+                <h6>{cbtTime?.hours}</h6>
+              </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
+                <h6>{cbtTime?.minutes}</h6>
+              </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
+                <h6>{cbtTime?.seconds}</h6>
+              </div>
             </div>
             <button
               onClick={handleSubmitQuestions}
