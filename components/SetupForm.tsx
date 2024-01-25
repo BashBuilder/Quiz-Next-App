@@ -87,9 +87,9 @@ export default function SetupForm() {
         <div className="mt-2 flex flex-col gap-2 ">
           <label className="font-semibold">Subjects</label>
           <ul>
-            <li>
+            {/* <li>
               <p> ✅ Use of English</p>
-            </li>
+            </li> */}
           </ul>
         </div>
         {errors.examType && (
