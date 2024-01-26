@@ -20,19 +20,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
+import { useState } from "react";
+
+type Checked = DropdownMenuCheckboxItemProps["checked"];
+
+const subjects = [
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Literature",
+  "CRS",
+  "Accounting",
+  "Mathematics",
+  "Economics",
+];
 
 export default function SetupForm() {
   const CbtSchema = z.object({
     examType: z.string(),
+    subjects: z.array(z.string()).nonempty(),
   });
   type CbtShemaType = z.infer<typeof CbtSchema>;
+
+  const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
+  const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
+  const [showPanel, setShowPanel] = useState<Checked>(false);
 
   const {
     control,
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CbtShemaType>({ resolver: zodResolver(CbtSchema) });
+
+  const selectedSubjects = watch("subjects");
 
   const startExam: SubmitHandler<CbtShemaType> = (data) => {
     console.log(data);
@@ -43,7 +67,7 @@ export default function SetupForm() {
     <section className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
       <form
         onSubmit={handleSubmit(startExam)}
-        className="flex w-4/5 max-w-sm flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-6 "
+        className="flex w-4/5 max-w-md flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-6 "
       >
         <div>
           <Image
@@ -87,21 +111,41 @@ export default function SetupForm() {
         <div className="mt-2 flex flex-col gap-2 ">
           <label className="font-semibold">Subjects</label>
           <ul>
-            {/* <li>
+            <li>
               <p> ✅ Use of English</p>
-            </li> */}
+            </li>
           </ul>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Select Subjects</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="h-40 w-80 overflow-y-scroll  ">
+              <DropdownMenuSeparator />
+              {subjects.map((subject) => (
+                <>
+                  <DropdownMenuCheckboxItem
+                    key={subject}
+                    checkedValue={subject}
+                    {...register("subjects")}
+                  >
+                    {subject}
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuSeparator />
+                </>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         {errors.examType && (
           <p className="text-red-500"> {errors.examType.message} </p>
         )}
-        <button type="submit" className="bg-primary text-background ">
+        <Button type="submit" className="bg-primary text-background ">
           {isSubmitting ? (
             <LoaderIcon className="mx-auto animate-spin " />
           ) : (
             "Start"
           )}
-        </button>
+        </Button>
       </form>
     </section>
   );
