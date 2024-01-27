@@ -45,82 +45,39 @@ const initialState: Questions[] | null = [
 ];
 
 export const questionSlice = createSlice({
-  name: "questionnaire",
+  name: "questions",
   initialState,
   reducers: {
-    fetchQuestion: (state, action) => {
-      const subjects = action.payload.subjects;
+    fetchQuestions: (state, action) => {
       async function getQuestions() {
         try {
-          interface Url {}
-          let url: Url | null = {};
-          subjects.map((subject: string, index: number) => {});
-
-          const url1 = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
-          const url2 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-          // const url3 = `https://questions.aloc.com.ng/api/v2/m/10?subject=biology`;
-          // const url4 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-          const [
-            response,
-            response2,
-            // response3, response4
-          ] = await Promise.all([
-            fetch(url1, {
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                AccessToken: "ALOC-caa562dfeb1a7de83a69",
-              },
-              method: "GET",
+          const { examType, subjects } = action.payload;
+          let newQuestions = await Promise.all(
+            subjects.map(async (subject: string) => {
+              const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=${subject}`;
+              const response = await fetch(url, {
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                  AccessToken: "ALOC-caa562dfeb1a7de83a69",
+                },
+                method: "GET",
+              });
+              const data = await response.json();
+              return { subject: data.subject, data: data.data };
             }),
-            fetch(url2, {
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                AccessToken: "ALOC-caa562dfeb1a7de83a69",
-              },
-              method: "GET",
-            }),
-            // fetch(url3, {
-            //   headers: {
-            //     Accept: "application/json",
-            //     "Content-Type": "application/json",
-            //     AccessToken: "ALOC-caa562dfeb1a7de83a69",
-            //   },
-            //   method: "GET",
-            // }),
-            // fetch(url4, {
-            //   headers: {
-            //     Accept: "application/json",
-            //     "Content-Type": "application/json",
-            //     AccessToken: "ALOC-caa562dfeb1a7de83a69",
-            //   },
-            //   method: "GET",
-            // }),
-          ]);
-          const [
-            data,
-            data2,
-            // data3, data4
-          ] = await Promise.all([
-            response.json(),
-            response2.json(),
-            // response3.json(),
-            // response4.json(),
-          ]);
-          setQuestions({ subject: data.subject, data: data.data });
-          const q = [
-            { subject: data.subject, data: data.data },
-            { subject: data2.subject, data: data2.data },
-            // { subject: data3.subject, data: data3.data },
-            // { subject: data4.subject, data: data4.data },
-          ];
-          setAllQuestions(q);
-          localStorage.setItem("allQuestions", JSON.stringify(q));
+          );
+          localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
+          console.log(newQuestions);
         } catch (error) {
           console.error("The error from fetching is ", error);
         }
       }
+      getQuestions();
     },
   },
 });
+
+export const { fetchQuestions } = questionSlice.actions;
+
+export default questionSlice.reducer;

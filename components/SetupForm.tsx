@@ -1,12 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import {
-  Controller,
-  SubmitHandler,
-  useFieldArray,
-  useForm,
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Select,
@@ -26,9 +21,35 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { fetchQuestions } from "@/app/GlobalRedux/Features/questions";
+
+export interface QuestionData {
+  answer: string;
+  examtype: string;
+  examyear: string;
+  id: number;
+  image: string;
+  option: QuestionOption;
+  question: string;
+  section: string;
+  solution: string;
+}
+export interface QuestionOption {
+  a: string;
+  b: string;
+  c: string;
+  d: string;
+  e: string;
+}
+export interface Questions {
+  subject: string;
+  data: QuestionData[];
+}
 
 export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
+  const dispatch = useDispatch();
 
   // Zod schema for the jamb question fetcching
   const CbtSchema = z.object({
@@ -73,8 +94,13 @@ export default function SetupForm() {
   });
   const selectedSubjects = watch("subjects");
 
-  const startExam: SubmitHandler<CbtShemaType> = (data) => {
+  const startExam: SubmitHandler<CbtShemaType> = async (data) => {
     const submit = { examType: data.examType, subjects };
+    try {
+      await dispatch(fetchQuestions(submit));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
