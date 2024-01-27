@@ -1,13 +1,15 @@
 "use client";
 
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./Features/answerSlice";
+import answerReducer from "./Features/answerSlice";
 import questionReducer from "./Features/questionSlice";
+import timerReducer from "./Features/timerSlice";
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    answer: answerReducer,
     questions: questionReducer,
+    timer: timerReducer,
   },
 });
 

@@ -49,7 +49,7 @@ export const questionSlice = createSlice({
   initialState,
   reducers: {
     fetchQuestions: (state, action) => {
-      state = action.payload;
+      return action.payload;
     },
   },
 });

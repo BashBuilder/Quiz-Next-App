@@ -29,7 +29,6 @@ export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
   const dispatch = useDispatch();
 
-  const q = useSelector((state: Rootstate) => state.questions.questions);
   // Zod schema for the jamb question fetcching
   const CbtSchema = z.object({
     examType: z.string(),
