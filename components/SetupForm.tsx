@@ -1,7 +1,12 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { z } from "zod";
 import {
   Select,
@@ -16,37 +21,32 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 
-type Checked = DropdownMenuCheckboxItemProps["checked"];
-
-const subjects = [
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Literature",
-  "CRS",
-  "Accounting",
-  "Mathematics",
-  "Economics",
-];
-
 export default function SetupForm() {
+  const [subjects, setSubjects] = useState<string[]>(["english"]);
+
+  // Zod schema for the jamb question fetcching
   const CbtSchema = z.object({
     examType: z.string(),
     subjects: z.array(z.string()).nonempty(),
   });
   type CbtShemaType = z.infer<typeof CbtSchema>;
 
-  const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
-  const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
-  const [showPanel, setShowPanel] = useState<Checked>(false);
+  // adjust the selected subjects
+  const adjustSubject = (subject: string) => {
+    setSubjects((sub) => {
+      if (sub && sub.includes(subject)) {
+        return sub.filter((other) => other !== subject);
+      } else {
+        return sub ? [...sub, subject] : [subject];
+      }
+    });
+  };
 
   const {
     control,
@@ -54,20 +54,34 @@ export default function SetupForm() {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<CbtShemaType>({ resolver: zodResolver(CbtSchema) });
-
+  } = useForm<CbtShemaType>({
+    resolver: zodResolver(CbtSchema),
+    defaultValues: {
+      examType: "utme",
+      subjects: [
+        "english",
+        "physics",
+        "chemistry",
+        "biology",
+        "literature",
+        "crs",
+        "accounting",
+        "mathematics",
+        "economics",
+      ],
+    },
+  });
   const selectedSubjects = watch("subjects");
 
   const startExam: SubmitHandler<CbtShemaType> = (data) => {
-    console.log(data);
-    console.log("submitted");
+    const submit = { examType: data.examType, subjects };
   };
 
   return (
-    <section className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
+    <section className="flex h-screen min-h-[42rem] items-center justify-center py-10 ">
       <form
         onSubmit={handleSubmit(startExam)}
-        className="flex w-4/5 max-w-md flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-6 "
+        className="flex w-[90vw] max-w-md flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-4 "
       >
         <div>
           <Image
@@ -75,11 +89,11 @@ export default function SetupForm() {
             alt="jamb"
             width={200}
             height={200}
-            className="mx-auto w-40"
+            className="mx-auto w-32"
             priority
           />
         </div>
-        <h3 className="text-center"> JAMB CBT</h3>
+        <h4 className="text-center"> JAMB CBT</h4>
         {/* Exam Type */}
         <div className="mt-2 flex flex-col gap-2 ">
           <label className="font-semibold">Exam Type</label>
@@ -92,12 +106,12 @@ export default function SetupForm() {
                   <SelectTrigger>
                     <SelectValue
                       placeholder="Select an Exam"
-                      defaultValue="jamb"
+                      defaultValue="utme"
                     />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="jamb">Jamb</SelectItem>
+                      <SelectItem value="utme">Jamb</SelectItem>
                       <SelectItem value="waec">Waec</SelectItem>
                       <SelectItem value="neco">Neco</SelectItem>
                     </SelectGroup>
@@ -111,35 +125,50 @@ export default function SetupForm() {
         <div className="mt-2 flex flex-col gap-2 ">
           <label className="font-semibold">Subjects</label>
           <ul>
-            <li>
-              <p> ✅ Use of English</p>
-            </li>
+            {subjects.map((subject, index) => (
+              <li key={index}>
+                <button
+                  className="px-2 py-1 capitalize "
+                  disabled={subject === "english"}
+                  onClick={() =>
+                    setSubjects((sub) =>
+                      sub.filter((other) => other !== subject),
+                    )
+                  }
+                >
+                  ✅{subject === "english" && " Use of"} {subject}
+                </button>
+              </li>
+            ))}
           </ul>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">Select Subjects</Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="h-40 w-80 overflow-y-scroll  ">
+            <DropdownMenuContent className="h-40 w-[80vw] max-w-80 overflow-y-scroll  ">
               <DropdownMenuSeparator />
-              {subjects.map((subject) => (
+              {selectedSubjects.map((subject, index) => (
                 <>
                   <DropdownMenuCheckboxItem
-                    key={subject}
-                    checkedValue={subject}
+                    key={index}
+                    className="capitalize"
+                    checked={subjects.includes(subject)}
+                    onCheckedChange={() => adjustSubject(subject)}
                     {...register("subjects")}
+                    disabled={
+                      subject === "english" ||
+                      (!subjects.includes(subject) && subjects.length > 3)
+                    }
                   >
                     {subject}
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator key={`separator${index}`} />
                 </>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        {errors.examType && (
-          <p className="text-red-500"> {errors.examType.message} </p>
-        )}
-        <Button type="submit" className="bg-primary text-background ">
+        <Button type="submit" disabled={subjects.length !== 4}>
           {isSubmitting ? (
             <LoaderIcon className="mx-auto animate-spin " />
           ) : (
