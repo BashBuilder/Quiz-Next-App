@@ -7,13 +7,23 @@ export interface Solution {
   subject: string;
   answer: string;
 }
+interface SubjectScores {
+  subject: string;
+  score: number;
+}
 export interface AnswerSlice {
   selectedOptions: Solution[];
   answers: Solution[];
+  score: number;
+  subjectScore: SubjectScores[];
+  isSubmitted: boolean;
 }
 const initialState: AnswerSlice = {
   selectedOptions: [],
   answers: [],
+  score: 0,
+  subjectScore: [],
+  isSubmitted: false,
 };
 
 export const answerSlice = createSlice({
@@ -44,16 +54,36 @@ export const answerSlice = createSlice({
       if (optionIndex !== -1) {
         const updatedOptions = [...state.selectedOptions];
         updatedOptions[optionIndex] = { num, subject, answer };
-
-        // console.log(updatedOption);
         return { ...state, selectedOptions: updatedOptions };
       }
-
       return state;
+    },
+    submitAnswer: (state, action) => {
+      const answers = state.answers;
+      const options = state.selectedOptions;
+      let score = 0;
+      let subjectScores: { [subject: string]: number } = {};
+      answers.forEach((answer, index) => {
+        if (options[index].answer === answer.answer) {
+          score++;
+          if (subjectScores.hasOwnProperty(answer.subject)) {
+            subjectScores[answer.subject]++;
+          } else {
+            subjectScores[answer.subject] = 1;
+          }
+        }
+      });
+      const formattedSubjectScores: SubjectScores[] = Object.entries(
+        subjectScores,
+      ).map(([subject, score]) => ({ subject, score }));
+
+      console.log(formattedSubjectScores);
+      console.log(score);
+      return { ...state, isSubmitted: true, score };
     },
   },
 });
 
-export const { getAnswers, updateAnswers } = answerSlice.actions;
+export const { getAnswers, updateAnswers, submitAnswer } = answerSlice.actions;
 
 export default answerSlice.reducer;

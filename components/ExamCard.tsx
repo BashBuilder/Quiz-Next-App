@@ -11,10 +11,11 @@ import {
 import {
   Solution,
   getAnswers,
+  submitAnswer,
   updateAnswers,
 } from "@/app/GlobalRedux/Features/answerSlice";
 import { Button } from "./ui/button";
-import { current } from "@reduxjs/toolkit";
+import { startTimer } from "@/app/GlobalRedux/Features/timerSlice";
 
 interface CbtTime {
   hours: number;
@@ -25,20 +26,15 @@ interface CbtTime {
 export default function ExamCard() {
   const [questions, setQuestions] = useState<Questions | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [scores, setScores] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string>("english");
-  // const [answers, setAnswers] = useState({});
-  // const [selectedOption, setSelectedOption] = useState({});
-  const [cbtTime, setCbtTime] = useState<CbtTime | null>();
 
-  const allQuestions = useSelector((state: Rootstate) => state.questions);
-  const answers = useSelector((state: Rootstate) => state.answer.answers);
-  const selectedOption = useSelector(
-    (state: Rootstate) => state.answer.selectedOptions,
-  );
   const dispatch = useDispatch();
+  const allQuestions = useSelector((state: Rootstate) => state.questions);
+  const reducerAnswer = useSelector((state: Rootstate) => state.answer);
+  const timer = useSelector((state: Rootstate) => state.timer);
+
+  const { answers, selectedOptions, isSubmitted, score } = reducerAnswer;
+  const { hours, minutes, seconds } = timer;
 
   // fetch questions from local storage
   useEffect(() => {
@@ -47,88 +43,15 @@ export default function ExamCard() {
     dispatch(fetchQuestions(t));
     setQuestions(t[0]);
     dispatch(getAnswers(t));
-    const endTime = new Date().getTime() + 7200 * 1000; // Set end time 2 hours from now
-    const onTimerEnd = () => {
-      console.log("Timer has ended!");
-    };
-    const countdown = countdownTimer(endTime, onTimerEnd);
+    // dispatch(startTimer(7200));
+
     // eslint-disable-next-line
   }, []);
+
   //defining some navigation methods
   const handleNextQuestion = (num: number) =>
     setQuestionIndex((prevIndex) => prevIndex + num);
   const handleRandomQuestion = (index: number) => setQuestionIndex(index);
-
-  // -function that saves the selected options
-  const handleAnswerQuestion = (
-    answer: string,
-    num: number,
-    subject: string,
-  ) => {
-    dispatch(updateAnswers({ answer, num, subject }));
-    // setSelectedOption((prevOption) => ({
-    //   ...prevOption,
-    //   [subject]: {
-    //     // @ts-ignore
-    //     ...(prevOption[subject] || {}), // Copy existing options for the subject
-    //     [num]: option, // Update or add new option for the given num
-    //   },
-    // }));
-  };
-  // get all correct options
-  // useEffect(() => {
-  //   const newAnswers = {};
-  //   const newOptions = {};
-  //   allQuestions?.forEach((questions) => {
-  //     const sub = questions.subject;
-  //     let ans = {};
-  //     let setOpt = {};
-  //     questions?.data.forEach((item, index) => {
-  //       ans = { ...ans, [index + 1]: item.answer };
-  //       setOpt = { ...setOpt, [index + 1]: "" };
-  //     });
-  //     // @ts-ignore
-  //     newAnswers[sub] = { ...ans };
-  //     // @ts-ignore
-  //     newOptions[sub] = { ...setOpt };
-  //   });
-  //   setAnswers(newAnswers);
-
-  //   setSelectedOption(newOptions);
-  //   // eslint-disable-next-line
-  // }, [allQuestions]);
-
-  // submit question and get the correct answers
-  const handleSubmitQuestions = () => {
-    setIsSubmitted(true);
-    setIsLoading(true);
-    let counter = 0;
-    const subjectScores = {};
-    // Iterate over subjects
-    Object.keys(answers).forEach((subject) => {
-      let subjectScore = 0;
-      // Iterate over questions within each subject
-      // @ts-ignore
-      Object.keys(answers[subject]).forEach((question) => {
-        // @ts-ignore
-        const answer = answers[subject][question];
-        // @ts-ignore
-        const selectedOpt = selectedOption[subject][question];
-        // Compare selected option with correct answer
-        if (selectedOpt === answer) {
-          counter++;
-          subjectScore++;
-        }
-      });
-      // Store subject score
-      // @ts-ignore
-      subjectScores[subject] = subjectScore;
-    });
-    setScores(counter);
-    setIsLoading(false);
-
-    console.log(counter, subjectScores);
-  };
 
   // switch between questions
   useEffect(() => {
@@ -138,29 +61,6 @@ export default function ExamCard() {
     newQuestions && setQuestions(newQuestions);
     // eslint-disable-next-line
   }, [selectedSubject]);
-
-  // the timer function
-  // @ts-ignore
-  function countdownTimer(endTime, onTimerEnd) {
-    const calculateTimeRemaining = () => {
-      const currentTime = new Date().getTime();
-      const timeRemaining = endTime - currentTime;
-
-      if (timeRemaining <= 0) {
-        clearInterval(countdown);
-        onTimerEnd();
-      } else {
-        const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((timeRemaining / (1000 * 60)) % 60);
-        const seconds = Math.floor((timeRemaining / 1000) % 60);
-
-        setCbtTime({ hours, minutes, seconds });
-      }
-    };
-    calculateTimeRemaining(); // Initial calculation
-    const countdown = setInterval(calculateTimeRemaining, 1000);
-    return countdown;
-  }
 
   if (questions && allQuestions) {
     const selectedColor = "bg-primary text-white";
@@ -173,7 +73,7 @@ export default function ExamCard() {
     const { subject } = questions;
 
     const currentNum: number = questionIndex + 1;
-    const options: Solution[] = selectedOption.filter(
+    const options: Solution[] = selectedOptions.filter(
       (option) => option.subject === subject,
     );
     const subjectAnswers: Solution[] = answers.filter(
@@ -191,28 +91,28 @@ export default function ExamCard() {
         <h4 className=" py-2 text-center"> JAMB CBT MOCK </h4>
         {isSubmitted ? (
           <div>
-            <h2 className="text-center">{scores}</h2>
+            <h2 className="text-center">{score}</h2>
           </div>
         ) : (
           <div className="mx-auto flex w-[90vw] max-w-5xl flex-col">
             <div className="mb-4 flex items-center justify-end gap-1">
               <h6>Time Remaining </h6>
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <h6>{cbtTime?.hours}</h6>
+                <h6>{hours}</h6>
               </div>
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <h6>{cbtTime?.minutes}</h6>
+                <h6>{minutes}</h6>
               </div>
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <h6>{cbtTime?.seconds}</h6>
+                <h6>{seconds}</h6>
               </div>
             </div>
-            {/* <button
-              onClick={handleSubmitQuestions}
+            <button
+              onClick={() => dispatch(submitAnswer(""))}
               className="mx-auto rounded-md bg-primary px-4 py-2 text-background "
             >
-              {isLoading ? <Loader2Icon className="animate-spin" /> : "Submit"}
-            </button> */}
+              Submit
+            </button>
           </div>
         )}
         {/* the subject panel */}
@@ -237,7 +137,7 @@ export default function ExamCard() {
                   className={` ${qIndex === questionIndex ? "flex flex-col gap-4" : "hidden"} `}
                 >
                   <div className="flex gap-1">
-                    <p className="text-xl">{questionIndex + 1}.</p>
+                    <p className="text-xl">{currentNum}.</p>
                     <p className="text-xl"> {question} </p>
                   </div>
                   <div className="flex flex-col items-start gap-2">
@@ -250,7 +150,13 @@ export default function ExamCard() {
                           key={index}
                           className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : !isNonChosenCorrectAnswer ? wrongColor : isOptionSelected && selectedColor) : isOptionSelected && selectedColor}`}
                           onClick={() =>
-                            handleAnswerQuestion(opt, qIndex + 1, subject)
+                            dispatch(
+                              updateAnswers({
+                                answer: opt,
+                                num: qIndex + 1,
+                                subject,
+                              }),
+                            )
                           }
                           disabled={isSubmitted}
                         >
@@ -287,12 +193,11 @@ export default function ExamCard() {
               const isOptionSelected = options.filter(
                 (opt) => opt.num === index + 1,
               )[0].answer;
-
+              const isCurrentQuestion = index + 1 === currentNum;
               return (
                 <button
                   key={index}
-                  // className={`h-10 w-10 rounded-md text-sm  ${isSubmitted ? test && sub && (correctSelectedOption ? "bg-green-500 text-white" : "bg-red-500 text-white") : test ? (test[index + 1] ? "bg-primary" : index === questionIndex ? "bg-slate-400" : "bg-slate-200") : index === questionIndex ? "bg-slate-400" : "bg-slate-200"} `}
-                  className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : wrongColor) : isOptionSelected && selectedColor}`}
+                  className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : wrongColor) : isOptionSelected ? selectedColor : isCurrentQuestion ? "bg-slate-700 text-white" : "bg-slate-200"}`}
                   onClick={() => handleRandomQuestion(index)}
                 >
                   {index + 1}
@@ -307,11 +212,7 @@ export default function ExamCard() {
     return (
       <div className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
         <button className="rounded-md bg-primary px-4 py-2 text-background ">
-          {isLoading ? (
-            <Loader2Icon className="animate-spin" />
-          ) : (
-            "Fetch Questions"
-          )}
+          <Loader2Icon className="animate-spin" />
         </button>
       </div>
     );
