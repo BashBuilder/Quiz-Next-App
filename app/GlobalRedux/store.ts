@@ -1,8 +1,8 @@
 "use client";
 
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./Features/counterSlice";
-import questionReducer from "./Features/questions";
+import counterReducer from "./Features/answerSlice";
+import questionReducer from "./Features/questionSlice";
 
 export const store = configureStore({
   reducer: {

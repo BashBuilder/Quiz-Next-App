@@ -21,36 +21,15 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { fetchQuestions } from "@/app/GlobalRedux/Features/questions";
-
-export interface QuestionData {
-  answer: string;
-  examtype: string;
-  examyear: string;
-  id: number;
-  image: string;
-  option: QuestionOption;
-  question: string;
-  section: string;
-  solution: string;
-}
-export interface QuestionOption {
-  a: string;
-  b: string;
-  c: string;
-  d: string;
-  e: string;
-}
-export interface Questions {
-  subject: string;
-  data: QuestionData[];
-}
+import { useDispatch, useSelector } from "react-redux";
+import { fetchQuestions } from "@/app/GlobalRedux/Features/questionSlice";
+import { Rootstate } from "@/app/GlobalRedux/store";
 
 export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
   const dispatch = useDispatch();
 
+  const q = useSelector((state: Rootstate) => state.questions.questions);
   // Zod schema for the jamb question fetcching
   const CbtSchema = z.object({
     examType: z.string(),
@@ -74,7 +53,7 @@ export default function SetupForm() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<CbtShemaType>({
     resolver: zodResolver(CbtSchema),
     defaultValues: {
@@ -97,9 +76,28 @@ export default function SetupForm() {
   const startExam: SubmitHandler<CbtShemaType> = async (data) => {
     const submit = { examType: data.examType, subjects };
     try {
-      await dispatch(fetchQuestions(submit));
-    } catch (error) {
-      console.error(error);
+      let newQuestions = await Promise.all(
+        subjects.map(async (subject: string) => {
+          const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=${subject}`;
+          const response = await fetch(url, {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              AccessToken: "ALOC-caa562dfeb1a7de83a69",
+            },
+            method: "GET",
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          return { subject: data.subject, data: data.data };
+        }),
+      );
+      localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
+      dispatch(fetchQuestions(newQuestions));
+    } catch (error: any) {
+      console.error("The error from fetching is ", error);
     }
   };
 

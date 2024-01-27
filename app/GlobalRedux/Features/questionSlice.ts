@@ -49,31 +49,7 @@ export const questionSlice = createSlice({
   initialState,
   reducers: {
     fetchQuestions: (state, action) => {
-      async function getQuestions() {
-        try {
-          const { examType, subjects } = action.payload;
-          let newQuestions = await Promise.all(
-            subjects.map(async (subject: string) => {
-              const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=${subject}`;
-              const response = await fetch(url, {
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                  AccessToken: "ALOC-caa562dfeb1a7de83a69",
-                },
-                method: "GET",
-              });
-              const data = await response.json();
-              return { subject: data.subject, data: data.data };
-            }),
-          );
-          localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
-          console.log(newQuestions);
-        } catch (error) {
-          console.error("The error from fetching is ", error);
-        }
-      }
-      getQuestions();
+      state = action.payload;
     },
   },
 });

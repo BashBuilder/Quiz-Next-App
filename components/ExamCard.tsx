@@ -3,138 +3,44 @@
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  increment,
-  decrement,
-  incrementByAmount,
-} from "@/app/GlobalRedux/Features/counterSlice";
 import { Rootstate } from "@/app/GlobalRedux/store";
+import {
+  Questions,
+  fetchQuestions,
+} from "@/app/GlobalRedux/Features/questionSlice";
 
-// Define the interfaces for your data types
-interface Data {
-  answer: string;
-  examtype: string;
-  examyear: string;
-  id: number;
-  image: string;
-  option: Option;
-  question: string;
-  section: string;
-  solution: string;
-}
-interface Option {
-  a: string;
-  b: string;
-  c: string;
-  d: string;
-  e: string;
-}
-interface Question {
-  subject: string;
-  data: Data[];
-}
 interface CbtTime {
   hours: number;
   minutes: number;
   seconds: number;
 }
 
-export default function SelectSubject() {
-  const [questions, setQuestions] = useState<Question | null>(null);
-  const [allQuestions, setAllQuestions] = useState<Question[] | null>([]);
+export default function ExamCard() {
+  const [questions, setQuestions] = useState<Questions | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [scores, setScores] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedSubject, setSelectedSubject] = useState<string>("chemistry");
+  const [selectedSubject, setSelectedSubject] = useState<string>("english");
   const [answers, setAnswers] = useState({});
   const [selectedOption, setSelectedOption] = useState({});
   const [cbtTime, setCbtTime] = useState<CbtTime | null>();
 
-  const count = useSelector((state: Rootstate) => state.counter.value);
+  const allQuestions = useSelector((state: Rootstate) => state.questions);
   const dispatch = useDispatch();
 
-  // Definining the function that fetches the questions
-  async function getQuestions() {
-    try {
-      setIsLoading(true);
-      const url1 = `https://questions.aloc.com.ng/api/v2/m/10?subject=chemistry`;
-      const url2 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-      // const url3 = `https://questions.aloc.com.ng/api/v2/m/10?subject=biology`;
-      // const url4 = `https://questions.aloc.com.ng/api/v2/m/10?subject=physics`;
-      const [
-        response,
-        response2,
-        // response3, response4
-      ] = await Promise.all([
-        fetch(url1, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            AccessToken: "ALOC-caa562dfeb1a7de83a69",
-          },
-          method: "GET",
-        }),
-        fetch(url2, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            AccessToken: "ALOC-caa562dfeb1a7de83a69",
-          },
-          method: "GET",
-        }),
-        // fetch(url3, {
-        //   headers: {
-        //     Accept: "application/json",
-        //     "Content-Type": "application/json",
-        //     AccessToken: "ALOC-caa562dfeb1a7de83a69",
-        //   },
-        //   method: "GET",
-        // }),
-        // fetch(url4, {
-        //   headers: {
-        //     Accept: "application/json",
-        //     "Content-Type": "application/json",
-        //     AccessToken: "ALOC-caa562dfeb1a7de83a69",
-        //   },
-        //   method: "GET",
-        // }),
-      ]);
-      const [
-        data,
-        data2,
-        // data3, data4
-      ] = await Promise.all([
-        response.json(),
-        response2.json(),
-        // response3.json(),
-        // response4.json(),
-      ]);
-      setQuestions({ subject: data.subject, data: data.data });
-      const q = [
-        { subject: data.subject, data: data.data },
-        { subject: data2.subject, data: data2.data },
-        // { subject: data3.subject, data: data3.data },
-        // { subject: data4.subject, data: data4.data },
-      ];
-      setAllQuestions(q);
-      localStorage.setItem("allQuestions", JSON.stringify(q));
-      setIsLoading(false);
-    } catch (error) {
-      console.error("The error from fetching is ", error);
-    }
-  }
   // fetch questions from local storage
   useEffect(() => {
     const q = localStorage.getItem("allQuestions");
-    // @ts-ignore
-    const t = JSON.parse(q);
-    // @ts-ignore
-    setAllQuestions(t);
+    const t = q ? JSON.parse(q) : null;
+    dispatch(fetchQuestions(t));
     setQuestions(t[0]);
 
-    // const duration = 3600; // 3600 seconds = 1 hour
-    const timer = countdownTimer();
+    const endTime = new Date().getTime() + 7200 * 1000; // Set end time 2 hours from now
+    const onTimerEnd = () => {
+      console.log("Timer has ended!");
+    };
+    const countdown = countdownTimer(endTime, onTimerEnd);
     // eslint-disable-next-line
   }, []);
 
@@ -223,21 +129,24 @@ export default function SelectSubject() {
 
   // the timer function
   // @ts-ignore
-  function countdownTimer(durationInSeconds = 7200) {
-    let timer = durationInSeconds;
+  function countdownTimer(endTime, onTimerEnd) {
+    const calculateTimeRemaining = () => {
+      const currentTime = new Date().getTime();
+      const timeRemaining = endTime - currentTime;
 
-    const countdown = setInterval(() => {
-      if (timer <= 0) {
+      if (timeRemaining <= 0) {
         clearInterval(countdown);
-        handleSubmitQuestions();
+        onTimerEnd();
       } else {
-        const hours = Math.floor(timer / 3600);
-        const minutes = Math.floor((timer % 3600) / 60);
-        const seconds = timer % 60;
+        const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((timeRemaining / (1000 * 60)) % 60);
+        const seconds = Math.floor((timeRemaining / 1000) % 60);
+
         setCbtTime({ hours, minutes, seconds });
-        timer--;
       }
-    }, 1000); // Update every 1000 milliseconds (1 second)
+    };
+    calculateTimeRemaining(); // Initial calculation
+    const countdown = setInterval(calculateTimeRemaining, 1000);
     return countdown;
   }
 
@@ -256,7 +165,7 @@ export default function SelectSubject() {
             <h2 className="text-center">{scores}</h2>
           </div>
         ) : (
-          <div className="mx-auto flex w-4/5 max-w-5xl flex-col">
+          <div className="mx-auto flex w-[90vw] max-w-5xl flex-col">
             <div className="mb-4 flex items-center justify-end gap-1">
               <h6>Time Remaining </h6>
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
@@ -280,13 +189,6 @@ export default function SelectSubject() {
         {/* the subject panel */}
 
         <div className="mx-auto flex w-4/5 max-w-5xl flex-col ">
-          <button onClick={() => dispatch(increment())}>Increment</button>
-          <span> {count} </span>
-          <button onClick={() => dispatch(decrement())}>Decrement</button>
-          <button onClick={() => dispatch(incrementByAmount(2))}>
-            Increment by 2
-          </button>
-
           <div className="mb-2 flex flex-wrap gap-2 ">
             {allQuestions.map((question, index) => (
               <button
@@ -298,6 +200,7 @@ export default function SelectSubject() {
               </button>
             ))}
           </div>
+
           {/* the top question section */}
           <div className=" mb-4 flex flex-col gap-4 rounded-xl bg-background p-4 shadow-xl md:mb-10 md:px-20 md:py-10  ">
             {questions.data.map((item, qIndex) => {
@@ -417,10 +320,7 @@ export default function SelectSubject() {
   } else {
     return (
       <div className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
-        <button
-          onClick={getQuestions}
-          className="rounded-md bg-primary px-4 py-2 text-background "
-        >
+        <button className="rounded-md bg-primary px-4 py-2 text-background ">
           {isLoading ? (
             <Loader2Icon className="animate-spin" />
           ) : (
