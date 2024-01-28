@@ -17,18 +17,12 @@ import {
 import { Button } from "./ui/button";
 import { startTimer } from "@/app/GlobalRedux/Features/timerSlice";
 
-interface CbtTime {
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
 export default function ExamCard() {
+  const dispatch = useDispatch();
   const [questions, setQuestions] = useState<Questions | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedSubject, setSelectedSubject] = useState<string>("english");
 
-  const dispatch = useDispatch();
   const allQuestions = useSelector((state: Rootstate) => state.questions);
   const reducerAnswer = useSelector((state: Rootstate) => state.answer);
   const timer = useSelector((state: Rootstate) => state.timer);
@@ -43,8 +37,6 @@ export default function ExamCard() {
     dispatch(fetchQuestions(t));
     setQuestions(t[0]);
     dispatch(getAnswers(t));
-    // dispatch(startTimer(7200));
-
     // eslint-disable-next-line
   }, []);
 
@@ -59,14 +51,14 @@ export default function ExamCard() {
       (questions) => questions.subject === selectedSubject,
     )[0];
     newQuestions && setQuestions(newQuestions);
+    setQuestionIndex(0);
     // eslint-disable-next-line
   }, [selectedSubject]);
 
   if (questions && allQuestions) {
-    const selectedColor = "bg-primary text-white";
+    const selectedColor = "bg-slate-700 text-white";
     const correctColor = "bg-green-500 text-white";
     const wrongColor = "bg-red-500 text-white";
-    const normalColor = "hover:bg-slate-100";
 
     const currentQuestion = questions.data[questionIndex];
     const { option, question } = currentQuestion;
@@ -96,7 +88,6 @@ export default function ExamCard() {
         ) : (
           <div className="mx-auto flex w-[90vw] max-w-5xl flex-col">
             <div className="mb-4 flex items-center justify-end gap-1">
-              <h6>Time Remaining </h6>
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
                 <h6>{hours}</h6>
               </div>
@@ -142,13 +133,14 @@ export default function ExamCard() {
                   </div>
                   <div className="flex flex-col items-start gap-2">
                     {Object.keys(option).map((opt: string, index) => {
-                      const isOptionCorrect = currentAnswer === currentOption;
                       const isOptionSelected = currentOption === opt;
+                      const isOptionCorrect =
+                        currentAnswer === currentOption && isOptionSelected;
                       const isNonChosenCorrectAnswer = currentAnswer === opt;
                       return (
                         <button
                           key={index}
-                          className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : !isNonChosenCorrectAnswer ? wrongColor : isOptionSelected && selectedColor) : isOptionSelected && selectedColor}`}
+                          className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : isNonChosenCorrectAnswer ? wrongColor : isOptionSelected && selectedColor) : isOptionSelected && selectedColor}`}
                           onClick={() =>
                             dispatch(
                               updateAnswers({
@@ -175,12 +167,14 @@ export default function ExamCard() {
               <Button
                 onClick={() => handleNextQuestion(-1)}
                 disabled={questionIndex === 0}
+                variant="ghost"
               >
                 Previous
               </Button>
               <Button
                 onClick={() => handleNextQuestion(1)}
                 disabled={questionIndex + 1 === questions.data.length}
+                variant="ghost"
               >
                 Next
               </Button>
@@ -189,11 +183,17 @@ export default function ExamCard() {
           {/* the lower question navigation pane  */}
           <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
             {questions.data.map((num, index) => {
-              const isOptionCorrect = currentOption === currentAnswer;
+              const isCurrentQuestion = index + 1 === currentNum;
+              const currentOpt = options.filter(
+                (option) => option.num === index + 1,
+              )[0].answer;
+              const currentAns = subjectAnswers.filter(
+                (answer) => answer.num === index + 1,
+              )[0].answer;
               const isOptionSelected = options.filter(
                 (opt) => opt.num === index + 1,
               )[0].answer;
-              const isCurrentQuestion = index + 1 === currentNum;
+              const isOptionCorrect = currentOpt === currentAns;
               return (
                 <button
                   key={index}

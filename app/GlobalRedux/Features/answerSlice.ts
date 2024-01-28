@@ -76,10 +76,12 @@ export const answerSlice = createSlice({
       const formattedSubjectScores: SubjectScores[] = Object.entries(
         subjectScores,
       ).map(([subject, score]) => ({ subject, score }));
-
-      console.log(formattedSubjectScores);
-      console.log(score);
-      return { ...state, isSubmitted: true, score };
+      return {
+        ...state,
+        isSubmitted: true,
+        score,
+        subjectScore: formattedSubjectScores,
+      };
     },
   },
 });

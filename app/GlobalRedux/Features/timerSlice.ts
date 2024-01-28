@@ -32,13 +32,16 @@ export const timerSlice = createSlice({
           const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
           const minutes = Math.floor((timeRemaining / (1000 * 60)) % 60);
           const seconds = Math.floor((timeRemaining / 1000) % 60);
-          return { ...state, hours, minutes, seconds };
+
+          // Update the Redux state here
+          state.hours = hours;
+          state.minutes = minutes;
+          state.seconds = seconds;
         }
       };
+
       calculateTimeRemaining(); // Initial calculation
       const countdown = setInterval(calculateTimeRemaining, 1000);
-      return state;
-      // return countdown;
     },
   },
 });
