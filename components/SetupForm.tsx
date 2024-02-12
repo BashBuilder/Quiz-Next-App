@@ -171,7 +171,7 @@ export default function SetupForm() {
             <DropdownMenuContent className="h-40 w-[80vw] max-w-80 overflow-y-scroll  ">
               <DropdownMenuSeparator />
               {selectedSubjects.map((subject, index) => (
-                <>
+                <div key={index}>
                   <DropdownMenuCheckboxItem
                     key={index}
                     className="capitalize"
@@ -186,7 +186,7 @@ export default function SetupForm() {
                     {subject}
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuSeparator key={`separator${index}`} />
-                </>
+                </div>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>

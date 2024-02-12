@@ -129,7 +129,13 @@ export default function ExamCard() {
                 >
                   <div className="flex gap-1">
                     <p className="text-xl">{currentNum}.</p>
-                    <p className="text-xl"> {question} </p>
+                    <p
+                      className="text-xl"
+                      dangerouslySetInnerHTML={{ __html: question }}
+                    />
+                    {/* {" "}
+                      {question}{" "}
+                    </p> */}
                   </div>
                   <div className="flex flex-col items-start gap-2">
                     {Object.keys(option).map((opt: string, index) => {
@@ -152,9 +158,15 @@ export default function ExamCard() {
                           }
                           disabled={isSubmitted}
                         >
-                          <span className="pr-4">{opt}.</span>
+                          <span dangerouslySetInnerHTML={{ __html: opt }} />
+                          <span className="pr-4">.</span>
+                          <span
+                            // @ts-ignore
+                            dangerouslySetInnerHTML={{ __html: option[opt] }}
+                          />
+                          {/* <span className="pr-4">{opt}.</span> */}
                           {/* @ts-ignore */}
-                          {option[opt]}
+                          {/* {option[opt]} */}
                         </button>
                       );
                     })}
