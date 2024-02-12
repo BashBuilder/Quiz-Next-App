@@ -51,6 +51,12 @@
   }
 }
 
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

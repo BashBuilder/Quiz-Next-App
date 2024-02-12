@@ -17,6 +17,7 @@ import {
 import { Button } from "./ui/button";
 import { startTimer } from "@/app/GlobalRedux/Features/timerSlice";
 import Image from "next/image";
+import CounterDownTimer from "./CounterDownTimer";
 
 export default function ExamCard() {
   const dispatch = useDispatch();
@@ -26,10 +27,8 @@ export default function ExamCard() {
 
   const allQuestions = useSelector((state: Rootstate) => state.questions);
   const reducerAnswer = useSelector((state: Rootstate) => state.answer);
-  const timer = useSelector((state: Rootstate) => state.timer);
 
   const { answers, selectedOptions, isSubmitted, score } = reducerAnswer;
-  const { hours, minutes, seconds } = timer;
 
   // fetch questions from local storage
   useEffect(() => {
@@ -80,7 +79,7 @@ export default function ExamCard() {
     )[0].answer;
 
     return (
-      <section className="flex min-h-screen flex-col gap-4 py-6 md:py-20 ">
+      <section className=" relative flex min-h-screen flex-col gap-4 py-3 md:py-6 ">
         <Image
           src="/img/jamb.png"
           alt="jamb"
@@ -95,20 +94,10 @@ export default function ExamCard() {
           </div>
         ) : (
           <div className="mx-auto flex w-[90vw] max-w-5xl flex-col">
-            <div className="mb-4 flex items-center justify-end gap-1">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <h6>{hours}</h6>
-              </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <h6>{minutes}</h6>
-              </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <h6>{seconds}</h6>
-              </div>
-            </div>
+            <CounterDownTimer />
             <button
               onClick={() => dispatch(submitAnswer(""))}
-              className="mx-auto rounded-md bg-primary px-4 py-2 text-background "
+              className="mx-auto rounded-md bg-primary px-4 py-2 text-background hover:opacity-80 "
             >
               Submit
             </button>
@@ -195,7 +184,7 @@ export default function ExamCard() {
             </div>
           </div>
           {/* the lower question navigation pane  */}
-          <div className="flex flex-wrap gap-4 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
+          <div className=" flex flex-wrap justify-center gap-4 rounded-xl bg-background px-4 py-4 shadow-xl md:p-10 md:px-8 ">
             {questions.data.map((num, index) => {
               const isCurrentQuestion = index + 1 === currentNum;
               const currentOpt = options.filter(
@@ -211,7 +200,7 @@ export default function ExamCard() {
               return (
                 <button
                   key={index}
-                  className={` w-[8%] min-w-10 max-w-10 rounded-md px-0 py-2 text-center ${isSubmitted ? (isOptionCorrect ? correctColor : wrongColor) : isOptionSelected ? selectedColor : isCurrentQuestion ? "bg-slate-400 text-white" : "bg-slate-100"}`}
+                  className={`w-10 rounded-md px-0 py-2 text-center ${isSubmitted ? (isOptionCorrect ? correctColor : wrongColor) : isOptionSelected ? selectedColor : isCurrentQuestion ? "bg-slate-400 text-white" : "bg-slate-100"}`}
                   onClick={() => handleRandomQuestion(index)}
                 >
                   {index + 1}
