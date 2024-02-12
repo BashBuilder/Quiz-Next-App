@@ -85,7 +85,7 @@ export default function ExamCard() {
           alt="jamb"
           width={200}
           height={200}
-          className="mx-auto w-32"
+          className="mx-auto w-2/5 min-w-20 max-w-32 "
           priority
         />
         {isSubmitted ? (
