@@ -89,7 +89,6 @@ export default function ExamCard() {
           className="mx-auto w-32"
           priority
         />
-        <h4 className=" py-2 text-center"> JAMB CBT MOCK </h4>
         {isSubmitted ? (
           <div>
             <h2 className="text-center">{score}</h2>
@@ -152,7 +151,7 @@ export default function ExamCard() {
                       return (
                         <button
                           key={index}
-                          className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : isNonChosenCorrectAnswer ? wrongColor : isOptionSelected && selectedColor) : isOptionSelected && selectedColor}`}
+                          className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : isNonChosenCorrectAnswer ? wrongColor : isOptionSelected && selectedColor) : isOptionSelected ? selectedColor : "bg-slate-50 hover:bg-slate-200"}`}
                           onClick={() =>
                             dispatch(
                               updateAnswers({
@@ -170,9 +169,6 @@ export default function ExamCard() {
                             // @ts-ignore
                             dangerouslySetInnerHTML={{ __html: option[opt] }}
                           />
-                          {/* <span className="pr-4">{opt}.</span> */}
-                          {/* @ts-ignore */}
-                          {/* {option[opt]} */}
                         </button>
                       );
                     })}
@@ -185,21 +181,21 @@ export default function ExamCard() {
               <Button
                 onClick={() => handleNextQuestion(-1)}
                 disabled={questionIndex === 0}
-                variant="ghost"
+                variant="secondary"
               >
                 Previous
               </Button>
               <Button
                 onClick={() => handleNextQuestion(1)}
                 disabled={questionIndex + 1 === questions.data.length}
-                variant="ghost"
+                variant="secondary"
               >
                 Next
               </Button>
             </div>
           </div>
           {/* the lower question navigation pane  */}
-          <div className="flex flex-wrap justify-between gap-3 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
+          <div className="flex flex-wrap gap-4 rounded-xl bg-background p-4 shadow-xl md:p-10 ">
             {questions.data.map((num, index) => {
               const isCurrentQuestion = index + 1 === currentNum;
               const currentOpt = options.filter(
@@ -215,7 +211,7 @@ export default function ExamCard() {
               return (
                 <button
                   key={index}
-                  className={`hover: rounded-md px-4 py-2 text-left ${isSubmitted ? (isOptionCorrect ? correctColor : wrongColor) : isOptionSelected ? selectedColor : isCurrentQuestion ? "bg-slate-700 text-white" : "bg-slate-200"}`}
+                  className={` w-[8%] min-w-10 max-w-10 rounded-md px-0 py-2 text-center ${isSubmitted ? (isOptionCorrect ? correctColor : wrongColor) : isOptionSelected ? selectedColor : isCurrentQuestion ? "bg-slate-400 text-white" : "bg-slate-100"}`}
                   onClick={() => handleRandomQuestion(index)}
                 >
                   {index + 1}
