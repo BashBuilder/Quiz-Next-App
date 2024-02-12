@@ -16,6 +16,7 @@ import {
 } from "@/app/GlobalRedux/Features/answerSlice";
 import { Button } from "./ui/button";
 import { startTimer } from "@/app/GlobalRedux/Features/timerSlice";
+import Image from "next/image";
 
 export default function ExamCard() {
   const dispatch = useDispatch();
@@ -80,6 +81,14 @@ export default function ExamCard() {
 
     return (
       <section className="flex min-h-screen flex-col gap-4 py-6 md:py-20 ">
+        <Image
+          src="/img/jamb.png"
+          alt="jamb"
+          width={200}
+          height={200}
+          className="mx-auto w-32"
+          priority
+        />
         <h4 className=" py-2 text-center"> JAMB CBT MOCK </h4>
         {isSubmitted ? (
           <div>
@@ -133,9 +142,6 @@ export default function ExamCard() {
                       className="text-xl"
                       dangerouslySetInnerHTML={{ __html: question }}
                     />
-                    {/* {" "}
-                      {question}{" "}
-                    </p> */}
                   </div>
                   <div className="flex flex-col items-start gap-2">
                     {Object.keys(option).map((opt: string, index) => {

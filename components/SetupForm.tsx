@@ -23,11 +23,13 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchQuestions } from "@/app/GlobalRedux/Features/questionSlice";
-import { Rootstate } from "@/app/GlobalRedux/store";
+// import { Rootstate } from "@/app/GlobalRedux/store";
+import { useRouter } from "next/navigation";
 
 export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   // Zod schema for the jamb question fetcching
   const CbtSchema = z.object({
@@ -77,7 +79,7 @@ export default function SetupForm() {
     try {
       let newQuestions = await Promise.all(
         subjects.map(async (subject: string) => {
-          const url = `https://questions.aloc.com.ng/api/v2/m/10?subject=${subject}`;
+          const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
           const response = await fetch(url, {
             headers: {
               Accept: "application/json",
@@ -95,6 +97,7 @@ export default function SetupForm() {
       );
       localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
       dispatch(fetchQuestions(newQuestions));
+      router.push("/exam");
     } catch (error: any) {
       console.error("The error from fetching is ", error);
     }
