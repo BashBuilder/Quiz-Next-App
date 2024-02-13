@@ -18,6 +18,7 @@ import { Button } from "./ui/button";
 import { startTimer } from "@/app/GlobalRedux/Features/timerSlice";
 import Image from "next/image";
 import CounterDownTimer from "./CounterDownTimer";
+import Calculator from "./Calculator";
 
 export default function ExamCard() {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ export default function ExamCard() {
 
     return (
       <section className=" relative flex min-h-screen flex-col gap-4 py-3 md:py-6 ">
+        <Calculator />
         <Image
           src="/img/jamb.png"
           alt="jamb"
