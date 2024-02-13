@@ -1,7 +1,10 @@
 "use client";
 
 import { Rootstate } from "@/app/GlobalRedux/store";
+import { Calculator } from "lucide-react";
 import { useSelector } from "react-redux";
+import { Button } from "./ui/button";
+import ExamCalculator from "./ExamCalculator";
 
 export default function CounterDownTimer() {
   const timer = useSelector((state: Rootstate) => state.timer);
@@ -9,6 +12,11 @@ export default function CounterDownTimer() {
 
   return (
     <article className=" absolute right-4 top-20 mb-4  flex items-center justify-end gap-1 md:right-[12%]">
+      <ExamCalculator />
+
+      <Button className="mr-5" variant="outline">
+        <Calculator />
+      </Button>
       <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
         <h6>{hours}</h6>
       </div>
