@@ -12,15 +12,26 @@ export default function ExamCalculator({
 }: ExamCalculatorProps) {
   const [result, setResult] = useState<string>("");
 
+  const handleCharacterLimit = (value: string) => {
+    const maxLength = 10; // Choose your desired character limit
+    return value.length > maxLength ? value.slice(0, maxLength) : value;
+  };
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const content = e.currentTarget.textContent;
-    content && setResult(result.concat(content));
+    if (result === "Error") {
+      content && setResult("".concat(content));
+    } else {
+      content && setResult(result.concat(content));
+    }
   };
   const clear = () => setResult("");
   const deleteEl = () => setResult(result.slice(0, -1));
   const calculateResult = () => {
     try {
-      setResult(eval(result).toString());
+      const rawResult = eval(result);
+      const roundedResult = parseFloat(rawResult.toFixed(4)); // Adjust the decimal places as needed
+      const scientificResult = roundedResult.toExponential(); // change the result to exponential notation
+      setResult(scientificResult.toString());
     } catch (error) {
       setResult("Error");
     }
@@ -44,7 +55,7 @@ export default function ExamCalculator({
           DE
         </Button>
         <Button onClick={handleClick} variant="secondary">
-          .
+          ^
         </Button>
         <Button onClick={handleClick} variant="secondary">
           /
@@ -96,9 +107,12 @@ export default function ExamCalculator({
         <Button onClick={handleClick} variant="secondary">
           0
         </Button>
+        <Button onClick={handleClick} variant="secondary">
+          .
+        </Button>
         <Button
           onClick={calculateResult}
-          className="col-span-3"
+          className="col-span-2"
           variant="secondary"
         >
           =
