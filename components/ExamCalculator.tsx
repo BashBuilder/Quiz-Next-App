@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 
-export default function ExamCalculator() {
+interface ExamCalculatorProps {
+  isCalculatorShown: boolean;
+}
+
+export default function ExamCalculator({
+  isCalculatorShown,
+}: ExamCalculatorProps) {
   const [result, setResult] = useState<string>("");
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,7 +27,9 @@ export default function ExamCalculator() {
   };
 
   return (
-    <div className="absolute top-10 m-2 flex w-60 flex-col gap-2 overflow-hidden rounded-xl bg-slate-700 p-2">
+    <div
+      className={` ${isCalculatorShown ? "absolute" : "hidden"} top-10 m-2 flex w-60 flex-col gap-2 overflow-hidden rounded-xl bg-slate-700 p-2`}
+    >
       <input
         type="text"
         value={result}
