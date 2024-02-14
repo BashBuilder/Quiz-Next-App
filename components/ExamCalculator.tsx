@@ -13,25 +13,40 @@ export default function ExamCalculator({
   const [result, setResult] = useState<string>("");
 
   const handleCharacterLimit = (value: string) => {
-    const maxLength = 10; // Choose your desired character limit
+    const maxLength = 16;
     return value.length > maxLength ? value.slice(0, maxLength) : value;
   };
+
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const content = e.currentTarget.textContent;
     if (result === "Error") {
-      content && setResult("".concat(content));
+      content && setResult(handleCharacterLimit(content));
     } else {
-      content && setResult(result.concat(content));
+      content && setResult(handleCharacterLimit(result.concat(content)));
     }
   };
+
   const clear = () => setResult("");
   const deleteEl = () => setResult(result.slice(0, -1));
   const calculateResult = () => {
     try {
       const rawResult = eval(result);
       const roundedResult = parseFloat(rawResult.toFixed(4)); // Adjust the decimal places as needed
-      const scientificResult = roundedResult.toExponential(); // change the result to exponential notation
-      setResult(scientificResult.toString());
+      //  setResult(roundedResult.toString());
+
+      const absValue = Math.abs(rawResult);
+      const exponent = Math.floor(Math.log10(absValue));
+      const mantissa = absValue / Math.pow(10, exponent);
+      const formattedNumber = mantissa.toFixed(4) + "e" + exponent.toString();
+
+      rawResult < 0
+        ? setResult(`-${formattedNumber}`)
+        : setResult(formattedNumber);
+
+      // const rawResult = eval(result);
+      // const roundedResult = parseFloat(rawResult.toFixed(4)); // Adjust the decimal places as needed
+      // const scientificResult = roundedResult.toExponential(); // change the result to exponential notation
+      // setResult(scientificResult.toString());
     } catch (error) {
       setResult("Error");
     }
@@ -72,7 +87,7 @@ export default function ExamCalculator({
           9
         </Button>
         <Button onClick={handleClick} variant="secondary">
-          +
+          *
         </Button>
       </div>
       <div className="grid grid-cols-4 gap-2">
