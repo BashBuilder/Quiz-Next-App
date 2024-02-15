@@ -37,16 +37,12 @@ export default function ExamCalculator({
       const absValue = Math.abs(rawResult);
       const exponent = Math.floor(Math.log10(absValue));
       const mantissa = absValue / Math.pow(10, exponent);
-      const formattedNumber = mantissa.toFixed(4) + "e" + exponent.toString();
+      const formattedNumber =
+        mantissa.toFixed(4) + "x10^" + exponent.toString();
 
       rawResult < 0
         ? setResult(`-${formattedNumber}`)
         : setResult(formattedNumber);
-
-      // const rawResult = eval(result);
-      // const roundedResult = parseFloat(rawResult.toFixed(4)); // Adjust the decimal places as needed
-      // const scientificResult = roundedResult.toExponential(); // change the result to exponential notation
-      // setResult(scientificResult.toString());
     } catch (error) {
       setResult("Error");
     }
