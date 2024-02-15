@@ -15,10 +15,8 @@ import {
   updateAnswers,
 } from "@/app/GlobalRedux/Features/answerSlice";
 import { Button } from "./ui/button";
-import { startTimer } from "@/app/GlobalRedux/Features/timerSlice";
 import Image from "next/image";
 import CounterDownTimer from "./CounterDownTimer";
-import Calculator from "./ExamCalculator";
 
 export default function ExamCard() {
   const dispatch = useDispatch();
@@ -89,6 +87,7 @@ export default function ExamCard() {
           className="mx-auto w-2/5 min-w-20 max-w-32 "
           priority
         />
+
         {isSubmitted ? (
           <div>
             <h2 className="text-center">{score}</h2>

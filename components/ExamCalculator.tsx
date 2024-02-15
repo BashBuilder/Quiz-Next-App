@@ -31,18 +31,22 @@ export default function ExamCalculator({
   const calculateResult = () => {
     try {
       const rawResult = eval(result);
-      const roundedResult = parseFloat(rawResult.toFixed(4)); // Adjust the decimal places as needed
+      // const roundedResult = parseFloat(rawResult.toFixed(4)); // Adjust the decimal places as needed
       //  setResult(roundedResult.toString());
 
-      const absValue = Math.abs(rawResult);
-      const exponent = Math.floor(Math.log10(absValue));
-      const mantissa = absValue / Math.pow(10, exponent);
-      const formattedNumber =
-        mantissa.toFixed(4) + "x10^" + exponent.toString();
+      if (rawResult < 10000) {
+        setResult(rawResult.toString());
+      } else {
+        const absValue = Math.abs(rawResult);
+        const exponent = Math.floor(Math.log10(absValue));
+        const mantissa = absValue / Math.pow(10, exponent);
+        const formattedNumber =
+          mantissa.toFixed(4) + "x10^" + exponent.toString();
 
-      rawResult < 0
-        ? setResult(`-${formattedNumber}`)
-        : setResult(formattedNumber);
+        rawResult < 0
+          ? setResult(`-${formattedNumber}`)
+          : setResult(formattedNumber);
+      }
     } catch (error) {
       setResult("Error");
     }

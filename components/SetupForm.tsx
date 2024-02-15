@@ -104,7 +104,16 @@ export default function SetupForm() {
   };
 
   return (
-    <section className="flex h-screen min-h-[42rem] items-center justify-center py-10 ">
+    <section className="relative flex h-screen min-h-[42rem] items-center justify-center py-10 ">
+      <Image
+        src="/img/jBa.jpg"
+        alt="jamb"
+        width={200}
+        height={200}
+        className="pointer-events-none absolute left-0 top-0 -z-10 mx-auto h-full w-screen"
+        priority
+      />
+      <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-black opacity-70" />
       <form
         onSubmit={handleSubmit(startExam)}
         className="flex w-[90vw] max-w-md flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-4 "
