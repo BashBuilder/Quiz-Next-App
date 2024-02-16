@@ -11,7 +11,6 @@ import {
 import {
   Solution,
   getAnswers,
-  submitAnswer,
   updateAnswers,
 } from "@/app/GlobalRedux/Features/answerSlice";
 import { Button } from "./ui/button";
@@ -31,11 +30,13 @@ export default function ExamCard() {
 
   // fetch questions from local storage
   useEffect(() => {
-    const q = localStorage.getItem("allQuestions");
-    const t = q ? JSON.parse(q) : null;
-    dispatch(fetchQuestions(t));
-    setQuestions(t[0]);
-    dispatch(getAnswers(t));
+    const allQuestionJson = localStorage.getItem("allQuestions");
+    const allQuestionReload = allQuestionJson
+      ? JSON.parse(allQuestionJson)
+      : null;
+    dispatch(fetchQuestions(allQuestionReload));
+    setQuestions(allQuestionReload[0]);
+    dispatch(getAnswers(allQuestionReload));
     // eslint-disable-next-line
   }, []);
 
@@ -51,6 +52,7 @@ export default function ExamCard() {
     )[0];
     newQuestions && setQuestions(newQuestions);
     setQuestionIndex(0);
+    console.log(newQuestions);
     // eslint-disable-next-line
   }, [selectedSubject]);
 
@@ -60,7 +62,7 @@ export default function ExamCard() {
     const wrongColor = "bg-red-500 text-white";
 
     const currentQuestion = questions.data[questionIndex];
-    const { option, question } = currentQuestion;
+    const { option, question, image: questionImage } = currentQuestion;
     const { subject } = questions;
 
     const currentNum: number = questionIndex + 1;
@@ -79,30 +81,6 @@ export default function ExamCard() {
 
     return (
       <section className="relative flex min-h-screen flex-col gap-4 bg-slate-900 py-3 md:py-6 ">
-        <Image
-          src="/img/jamb.png"
-          alt="jamb"
-          width={200}
-          height={200}
-          className="mx-auto w-2/5 min-w-20 max-w-32 rounded-xl bg-background "
-          priority
-        />
-
-        {isSubmitted ? (
-          <div>
-            <h2 className="text-center">{score}</h2>
-          </div>
-        ) : (
-          <div className="mx-auto flex w-[90vw] max-w-5xl flex-col">
-            <CounterDownTimer />
-            <button
-              onClick={() => dispatch(submitAnswer(""))}
-              className="mx-auto rounded-md bg-primary px-4 py-2 text-background hover:opacity-80 "
-            >
-              Submit
-            </button>
-          </div>
-        )}
         {/* the subject panel */}
         <div className="mx-auto flex w-[90vw] max-w-5xl flex-col ">
           <div className="mb-2 flex flex-wrap gap-2 ">
@@ -130,6 +108,9 @@ export default function ExamCard() {
                       className="text-xl"
                       dangerouslySetInnerHTML={{ __html: question }}
                     />
+                    {questionImage && (
+                      <Image src={`${questionImage}`} alt="question image" />
+                    )}
                   </div>
                   <div className="flex flex-col items-start gap-2">
                     {Object.keys(option).map((opt: string, index) => {
@@ -213,7 +194,7 @@ export default function ExamCard() {
     );
   } else {
     return (
-      <div className="flex min-h-screen items-center justify-center py-10 md:py-20 ">
+      <div className="flex items-center justify-center py-10 md:py-20 ">
         <button className="rounded-md bg-primary px-4 py-2 text-background ">
           <Loader2Icon className="animate-spin" />
         </button>

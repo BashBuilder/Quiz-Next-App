@@ -59,7 +59,9 @@ export default function CounterDownTimer() {
   };
 
   useEffect(() => {
-    startTimer(duration);
+    if (isExamStarted) {
+      startTimer(duration);
+    }
     // eslint-disable-next-line
   }, [isExamStarted]);
 
@@ -69,6 +71,7 @@ export default function CounterDownTimer() {
       const reloadTimer: { time: number; isExamStarted: boolean } =
         JSON.parse(timerJson);
       startTimer(reloadTimer.time);
+      dispatch(setTimerTime(reloadTimer.time));
     }
     // eslint-disable-next-line
   }, []);
