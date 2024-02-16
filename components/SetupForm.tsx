@@ -113,11 +113,11 @@ export default function SetupForm() {
         className="pointer-events-none absolute left-0 top-0 -z-10 mx-auto h-full w-screen"
         priority
       />
-      <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-black opacity-70" />
+      <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-white opacity-60" />
       <div className="flex w-fit overflow-hidden rounded-3xl bg-background shadow-2xl ">
         <Image
-          src="/img/examstudent.jpg"
-          alt="jamb"
+          src="/img/closeup.png"
+          alt="writing exam"
           width={200}
           height={200}
           className="h-full min-h-[38rem] min-w-96 object-cover object-right"
