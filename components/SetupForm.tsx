@@ -114,103 +114,114 @@ export default function SetupForm() {
         priority
       />
       <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-black opacity-70" />
-      <form
-        onSubmit={handleSubmit(startExam)}
-        className="flex w-[90vw] max-w-md flex-col gap-4 rounded-xl bg-background p-6 md:px-10 md:py-4 "
-      >
-        <div>
-          <Image
-            src="/img/jamb.png"
-            alt="jamb"
-            width={200}
-            height={200}
-            className="mx-auto w-32"
-            priority
-          />
-        </div>
-        <h4 className="text-center"> JAMB CBT</h4>
-        {/* Exam Type */}
-        <div className="mt-2 flex flex-col gap-2 ">
-          <label className="font-semibold">Exam Type</label>
-          <Controller
-            control={control}
-            name="examType"
-            render={({ field }) => {
-              return (
-                <Select {...field} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder="Select an Exam"
-                      defaultValue="utme"
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="utme">Jamb</SelectItem>
-                      <SelectItem value="waec">Waec</SelectItem>
-                      <SelectItem value="neco">Neco</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          />
-        </div>
-        {/* Subjects */}
-        <div className="mt-2 flex flex-col gap-2 ">
-          <label className="font-semibold">Subjects</label>
-          <ul>
-            {subjects.map((subject, index) => (
-              <li key={index}>
-                <button
-                  className="px-2 py-1 capitalize "
-                  disabled={subject === "english"}
-                  onClick={() =>
-                    setSubjects((sub) =>
-                      sub.filter((other) => other !== subject),
-                    )
-                  }
-                >
-                  ✅{subject === "english" && " Use of"} {subject}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Select Subjects</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="h-40 w-[80vw] max-w-80 overflow-y-scroll  ">
-              <DropdownMenuSeparator />
-              {selectedSubjects.map((subject, index) => (
-                <div key={index}>
-                  <DropdownMenuCheckboxItem
-                    key={index}
-                    className="capitalize"
-                    checked={subjects.includes(subject)}
-                    onCheckedChange={() => adjustSubject(subject)}
-                    {...register("subjects")}
-                    disabled={
-                      subject === "english" ||
-                      (!subjects.includes(subject) && subjects.length > 3)
+      <div className="flex w-fit overflow-hidden rounded-3xl bg-background shadow-2xl ">
+        <Image
+          src="/img/examstudent.jpg"
+          alt="jamb"
+          width={200}
+          height={200}
+          className="h-full min-h-[38rem] min-w-96 object-cover object-right"
+          priority
+        />
+        <form
+          onSubmit={handleSubmit(startExam)}
+          className="flex w-[90vw] max-w-sm flex-col gap-4 p-6 md:px-10 md:py-4 "
+        >
+          <div>
+            <Image
+              src="/img/jamb.png"
+              alt="jamb"
+              width={200}
+              height={200}
+              className="mx-auto w-32"
+              priority
+            />
+          </div>
+          <h4 className="text-center"> JAMB CBT</h4>
+          {/* Exam Type */}
+          <div className="mt-2 flex flex-col gap-2 ">
+            <label className="font-semibold">Exam Type</label>
+            <Controller
+              control={control}
+              name="examType"
+              render={({ field }) => {
+                return (
+                  <Select {...field} onValueChange={field.onChange}>
+                    <SelectTrigger disabled>
+                      <SelectValue
+                        placeholder="Select an Exam"
+                        defaultValue="utme"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="utme">Jamb</SelectItem>
+                        <SelectItem value="waec">Waec</SelectItem>
+                        <SelectItem value="neco">Neco</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                );
+              }}
+            />
+          </div>
+          {/* Subjects */}
+          <div className="mt-2 flex flex-col gap-2 ">
+            <label className="font-semibold">Subjects</label>
+            <ul>
+              {subjects.map((subject, index) => (
+                <li key={index}>
+                  <button
+                    className="px-2 py-1 capitalize "
+                    type="button"
+                    disabled={subject === "english"}
+                    onClick={() =>
+                      setSubjects((sub) =>
+                        sub.filter((other) => other !== subject),
+                      )
                     }
                   >
-                    {subject}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuSeparator key={`separator${index}`} />
-                </div>
+                    ✅{subject === "english" && " Use of"} {subject}
+                  </button>
+                </li>
               ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <Button type="submit" disabled={subjects.length !== 4}>
-          {isSubmitting ? (
-            <LoaderIcon className="mx-auto animate-spin " />
-          ) : (
-            "Start"
-          )}
-        </Button>
-      </form>
+            </ul>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Select Subjects</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="h-40 w-[80vw] max-w-80 overflow-y-scroll  ">
+                <DropdownMenuSeparator />
+                {selectedSubjects.map((subject, index) => (
+                  <div key={index}>
+                    <DropdownMenuCheckboxItem
+                      key={index}
+                      className="capitalize"
+                      checked={subjects.includes(subject)}
+                      onCheckedChange={() => adjustSubject(subject)}
+                      {...register("subjects")}
+                      disabled={
+                        subject === "english" ||
+                        (!subjects.includes(subject) && subjects.length > 3)
+                      }
+                    >
+                      {subject}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuSeparator key={`separator${index}`} />
+                  </div>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <Button type="submit" disabled={subjects.length !== 4}>
+            {isSubmitting ? (
+              <LoaderIcon className="mx-auto animate-spin " />
+            ) : (
+              "Start"
+            )}
+          </Button>
+        </form>
+      </div>
     </section>
   );
 }
