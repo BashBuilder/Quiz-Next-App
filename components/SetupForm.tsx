@@ -23,8 +23,8 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchQuestions } from "@/app/GlobalRedux/Features/questionSlice";
-// import { Rootstate } from "@/app/GlobalRedux/store";
 import { useRouter } from "next/navigation";
+import { setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
 
 export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
@@ -95,8 +95,16 @@ export default function SetupForm() {
           return { subject: data.subject, data: data.data };
         }),
       );
+
+      const EXAM_TIME: { time: number; isExamStarted: boolean } = {
+        time: 7200,
+        isExamStarted: true,
+      };
+
       localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
+      localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
       dispatch(fetchQuestions(newQuestions));
+      dispatch(setTimerTime(EXAM_TIME.time));
       router.push("/exam");
     } catch (error: any) {
       console.error("The error from fetching is ", error);
@@ -113,7 +121,7 @@ export default function SetupForm() {
         className="pointer-events-none absolute left-0 top-0 -z-10 mx-auto h-full w-screen"
         priority
       />
-      <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-white opacity-60" />
+      <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-slate-700 opacity-80" />
       <div className="flex w-fit overflow-hidden rounded-3xl bg-background shadow-2xl ">
         <Image
           src="/img/closeup.png"

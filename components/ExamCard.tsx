@@ -78,13 +78,13 @@ export default function ExamCard() {
     )[0].answer;
 
     return (
-      <section className=" relative flex min-h-screen flex-col gap-4 py-3 md:py-6 ">
+      <section className="relative flex min-h-screen flex-col gap-4 bg-slate-900 py-3 md:py-6 ">
         <Image
           src="/img/jamb.png"
           alt="jamb"
           width={200}
           height={200}
-          className="mx-auto w-2/5 min-w-20 max-w-32 "
+          className="mx-auto w-2/5 min-w-20 max-w-32 rounded-xl bg-background "
           priority
         />
 
