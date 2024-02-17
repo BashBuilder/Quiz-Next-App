@@ -75,44 +75,66 @@ export default function SetupForm() {
   const selectedSubjects = watch("subjects");
 
   const startExam: SubmitHandler<CbtShemaType> = async (data) => {
-    const submit = { examType: data.examType, subjects };
+    const token = "ALOC-caa562dfeb1a7de83a69";
+
+    const submitData = { examType: data.examType, subjects };
     try {
-      let newQuestions = await Promise.all(
-        subjects.map(async (subject: string) => {
-          const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
-          const response = await fetch(url, {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              AccessToken: "ALOC-caa562dfeb1a7de83a69",
-            },
-            method: "GET",
-          });
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data = await response.json();
-          return { subject: data.subject, data: data.data };
-        }),
-      );
+      const url = `http://localhost:3000/api/exam`;
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(submitData),
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+          AccessToken: token,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(data);
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      console.log(data);
 
-      const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
-        duration: 7200,
-        isExamStarted: true,
-      };
+      return data;
 
-      localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
-      localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
-      dispatch(fetchQuestions(newQuestions));
-      dispatch(setTimerTime(EXAM_TIME.duration));
-      router.push("/exam");
+      //   let newQuestions = await Promise.all(
+      //     subjects.map(async (subject: string) => {
+      //       const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
+      //       const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
+      //       const response = await fetch(url, {
+      //         headers: {
+      //           Accept: "application/json",
+      //           "Content-Type": "application/json",
+      //           AccessToken: "ALOC-caa562dfeb1a7de83a69",
+      //         },
+      //         method: "GET",
+      //       });
+      //       if (!response.ok) {
+      //         throw new Error(`HTTP error! Status: ${response.status}`);
+      //       }
+      //       const data = await response.json();
+      //       return { subject: data.subject, data: data.data };
+      //     }),
+      //   );
+
+      //   const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
+      //     duration: 7200,
+      //     isExamStarted: true,
+      //   };
+
+      //   localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
+      //   localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
+      //   dispatch(fetchQuestions(newQuestions));
+      //   dispatch(setTimerTime(EXAM_TIME.duration));
+      //   router.push("/exam");
     } catch (error: any) {
       console.error("The error from fetching is ", error);
     }
   };
 
   return (
-    <section className="relative flex h-screen min-h-[42rem] items-center justify-center py-10 ">
+    <section className="relative flex h-screen min-h-[42rem] items-center justify-center overflow-hidden py-10 ">
       <Image
         src="/img/jBa.jpg"
         alt="jamb"
