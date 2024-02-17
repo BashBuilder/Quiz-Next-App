@@ -75,8 +75,6 @@ export default function SetupForm() {
   const selectedSubjects = watch("subjects");
 
   const startExam: SubmitHandler<CbtShemaType> = async (data) => {
-    const token = "ALOC-caa562dfeb1a7de83a69";
-
     const submitData = { examType: data.examType, subjects };
     try {
       const url = `http://localhost:3000/api/exam`;
@@ -86,7 +84,6 @@ export default function SetupForm() {
         headers: {
           Accept: "application/json",
           "Content-type": "application/json",
-          AccessToken: token,
         },
       });
       const data = await response.json();

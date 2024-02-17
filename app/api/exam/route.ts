@@ -49,10 +49,16 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json(); // Await the resolved value of the promise
     const token = "ALOC-caa562dfeb1a7de83a69";
-
     const { subjects, examType } = body;
+
     console.log(body);
-    const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subjects[1]}`;
+
+    // Get any 40 random questions
+    // const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subjects[1]}`;
+
+    // Get any 40 questions by subject and year
+    const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=chemistry&year=2005`;
+
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
@@ -61,13 +67,15 @@ export async function POST(req: NextRequest) {
       },
       method: "GET",
     });
+    const data = await response.json();
     if (!response.ok) {
+      console.log(data);
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    const data = await response.json();
-    // return { subject: data.subject, data: data.data };
+    const results = { subject: data.subject, data: data.data };
+    console.log(results);
 
-    return NextResponse.json({ success: "request received" });
+    return NextResponse.json(results);
   } catch (error) {
     console.error("Error parsing request body:", error);
     return NextResponse.error();
