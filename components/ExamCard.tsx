@@ -52,7 +52,6 @@ export default function ExamCard() {
     )[0];
     newQuestions && setQuestions(newQuestions);
     setQuestionIndex(0);
-    console.log(newQuestions);
     // eslint-disable-next-line
   }, [selectedSubject]);
 

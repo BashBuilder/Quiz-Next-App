@@ -96,15 +96,15 @@ export default function SetupForm() {
         }),
       );
 
-      const EXAM_TIME: { time: number; isExamStarted: boolean } = {
-        time: 7200,
+      const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
+        duration: 7200,
         isExamStarted: true,
       };
 
       localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
       localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
       dispatch(fetchQuestions(newQuestions));
-      dispatch(setTimerTime(EXAM_TIME.time));
+      dispatch(setTimerTime(EXAM_TIME.duration));
       router.push("/exam");
     } catch (error: any) {
       console.error("The error from fetching is ", error);
@@ -118,7 +118,7 @@ export default function SetupForm() {
         alt="jamb"
         width={200}
         height={200}
-        className="pointer-events-none absolute left-0 top-0 -z-10 mx-auto h-full w-screen"
+        className="pointer-events-none absolute left-0 top-0 -z-10 mx-auto h-full w-screen object-cover"
         priority
       />
       <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-slate-700 opacity-80" />
@@ -128,7 +128,7 @@ export default function SetupForm() {
           alt="writing exam"
           width={200}
           height={200}
-          className="h-full min-h-[38rem] min-w-96 object-cover object-right"
+          className="hidden h-full min-h-[38rem]  min-w-96 object-cover object-right md:inline"
           priority
         />
         <form

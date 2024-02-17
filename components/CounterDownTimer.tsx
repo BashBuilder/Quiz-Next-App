@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import ExamCalculator from "./ExamCalculator";
 import { useEffect, useState } from "react";
-import { setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
+import { endExam, setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
+import { submitAnswer } from "@/app/GlobalRedux/Features/answerSlice";
+import { useRouter, usePathname } from "next/navigation";
 
 interface ExamTimer {
   seconds: number;
@@ -23,31 +25,30 @@ export default function CounterDownTimer() {
   const timer = useSelector((state: Rootstate) => state.timer);
   const [isCalculatorShown, setIsCalculatorShown] = useState(false);
   const dispatch = useDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
   const { duration, isExamStarted } = timer;
 
-  const startTimer = (duration: number) => {
-    let examTime: { time: number; isExamStarted: boolean } = {
-      time: 0,
+  const startTimer = (examDuration: number) => {
+    let examTime: { duration: number; isExamStarted: boolean } = {
+      duration: 0,
       isExamStarted: true,
     };
-    const endTime = new Date().getTime() + duration * 1000;
+    const endTime = new Date().getTime() + examDuration * 1000;
     const calculateTimeRemaining = () => {
       const currentTime = new Date().getTime();
       const timeRemaining = endTime - currentTime;
-      if (timeRemaining <= 0) {
-        examTime = {
-          time: 0,
-          isExamStarted: false,
-        };
+      if (timeRemaining < 0) {
+        dispatch(submitAnswer());
+        dispatch(endExam());
         clearInterval(countdown);
-        localStorage.setItem("examTime", JSON.stringify(examTime));
       } else {
         const hours = Math.floor((timeRemaining / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((timeRemaining / (1000 * 60)) % 60);
         const seconds = Math.floor((timeRemaining / 1000) % 60);
         setExamTime((prevTime) => ({ ...prevTime, minutes, seconds, hours }));
         examTime = {
-          time: timeRemaining / 1000,
+          duration: timeRemaining / 1000,
           isExamStarted: true,
         };
         localStorage.setItem("examTime", JSON.stringify(examTime));
@@ -60,18 +61,22 @@ export default function CounterDownTimer() {
 
   useEffect(() => {
     if (isExamStarted) {
-      startTimer(duration);
+      // startTimer(duration);
     }
+    // else {
+    //   if (pathname === "/exam") router.push("/results");
+    // }
     // eslint-disable-next-line
   }, [isExamStarted]);
 
   useEffect(() => {
     const timerJson = localStorage.getItem("examTime");
     if (timerJson) {
-      const reloadTimer: { time: number; isExamStarted: boolean } =
+      const reloadTimer: { duration: number; isExamStarted: boolean } =
         JSON.parse(timerJson);
-      startTimer(reloadTimer.time);
-      dispatch(setTimerTime(reloadTimer.time));
+
+      console.log(reloadTimer.duration);
+      startTimer(reloadTimer.duration);
     }
     // eslint-disable-next-line
   }, []);

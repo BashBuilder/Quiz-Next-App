@@ -58,7 +58,7 @@ export const answerSlice = createSlice({
       }
       return state;
     },
-    submitAnswer: (state, action) => {
+    submitAnswer: (state) => {
       const answers = state.answers;
       const options = state.selectedOptions;
       let score = 0;
