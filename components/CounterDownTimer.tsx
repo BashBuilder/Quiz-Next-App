@@ -29,16 +29,16 @@ export default function CounterDownTimer() {
   const pathname = usePathname();
   const { duration, isExamStarted } = timer;
 
-  const startTimer = (examDuration: number) => {
+  const startTimer = () => {
     let examTime: { duration: number; isExamStarted: boolean } = {
       duration: 0,
       isExamStarted: true,
     };
-    const endTime = new Date().getTime() + examDuration * 1000;
+    const endTime = new Date().getTime() + duration * 1000;
     const calculateTimeRemaining = () => {
       const currentTime = new Date().getTime();
       const timeRemaining = endTime - currentTime;
-      if (timeRemaining < 0) {
+      if (timeRemaining <= 0) {
         dispatch(submitAnswer());
         dispatch(endExam());
         clearInterval(countdown);
@@ -61,11 +61,10 @@ export default function CounterDownTimer() {
 
   useEffect(() => {
     if (isExamStarted) {
-      // startTimer(duration);
+      startTimer();
+    } else {
+      // if (pathname === "/exam") router.push("/results");
     }
-    // else {
-    //   if (pathname === "/exam") router.push("/results");
-    // }
     // eslint-disable-next-line
   }, [isExamStarted]);
 
@@ -74,9 +73,7 @@ export default function CounterDownTimer() {
     if (timerJson) {
       const reloadTimer: { duration: number; isExamStarted: boolean } =
         JSON.parse(timerJson);
-
-      console.log(reloadTimer.duration);
-      startTimer(reloadTimer.duration);
+      dispatch(setTimerTime(reloadTimer.duration));
     }
     // eslint-disable-next-line
   }, []);
