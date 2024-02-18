@@ -103,10 +103,20 @@ export default function ExamCard() {
                 >
                   <div className="flex gap-1">
                     <p className="text-xl">{currentNum}.</p>
-                    <p
-                      className="text-xl"
-                      dangerouslySetInnerHTML={{ __html: question }}
-                    />
+                    {Array.isArray(question) ? (
+                      question.map((q, index) => (
+                        <p
+                          className="mb-4"
+                          key={index}
+                          dangerouslySetInnerHTML={{ __html: q }}
+                        />
+                      ))
+                    ) : (
+                      <p
+                        className="text-xl"
+                        dangerouslySetInnerHTML={{ __html: question }}
+                      />
+                    )}
                     {questionImage && (
                       <Image src={`${questionImage}`} alt="question image" />
                     )}

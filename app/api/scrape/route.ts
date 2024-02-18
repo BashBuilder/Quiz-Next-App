@@ -4,13 +4,13 @@ import cheerio from "cheerio";
 
 export async function GET() {
   try {
+    console.log("request Started");
     const url =
       "https://myschool.ng/classroom/english-language?exam_type=jamb&page=1";
     const response = await axios.get(url);
 
     const $ = cheerio.load(response.data);
     const questionItemElements = $(".question-item");
-    // @ts-ignore
 
     let questionsData: {
       index: number;
@@ -36,10 +36,9 @@ export async function GET() {
 
       questionsData.push({ index, question, options });
     });
-
     console.log(questionsData);
 
-    return NextResponse.json({ link: questionsData });
+    return NextResponse.json({ questions: questionsData });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: "error occured" });

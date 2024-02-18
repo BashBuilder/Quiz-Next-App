@@ -26,7 +26,12 @@ import { fetchQuestions } from "@/app/GlobalRedux/Features/questionSlice";
 import { useRouter } from "next/navigation";
 import { setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
 
+// -----------------------------miscellaneous
+import { dataQuestion } from "@/lib/misc";
+
 export default function SetupForm() {
+  const { questions } = dataQuestion;
+
   const [subjects, setSubjects] = useState<string[]>(["english"]);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -76,11 +81,11 @@ export default function SetupForm() {
 
   const startExam: SubmitHandler<CbtShemaType> = async (data) => {
     const submitData = { examType: data.examType, subjects };
+    // body: JSON.stringify(submitData),
     try {
       const url = `http://localhost:3000/api/scrape`;
       const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(submitData),
+        method: "GET",
         headers: {
           Accept: "application/json",
           "Content-type": "application/json",
@@ -228,6 +233,27 @@ export default function SetupForm() {
             )}
           </Button>
         </form>
+      </div>
+
+      {/* misc  */}
+      <div className="rounded-xl bg-white p-4">
+        {questions.map((question, index) => (
+          <div key={index}>
+            {question.question.map((q, index) => (
+              <p
+                className="mb-4"
+                key={index}
+                dangerouslySetInnerHTML={{ __html: q }}
+              />
+            ))}
+            {question.options.map((option, index) => (
+              <Button
+                key={index}
+                dangerouslySetInnerHTML={{ __html: option }}
+              />
+            ))}
+          </div>
+        ))}
       </div>
     </section>
   );
