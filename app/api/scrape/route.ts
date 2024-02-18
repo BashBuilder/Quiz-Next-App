@@ -6,7 +6,7 @@ interface Question {
   id: number;
   question: string | string[];
   option: Object;
-  section: string;
+  topic: string;
   image: string;
   answer: string;
   solution: string;
@@ -16,9 +16,8 @@ interface Question {
 
 export async function GET() {
   try {
-    console.log("request Started");
     const url =
-      "https://myschool.ng/classroom/english-language?exam_type=jamb&page=2";
+      "https://myschool.ng/classroom/english-language?exam_type=jamb&page=3";
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
     const questionItemElements = $(".question-item");
@@ -38,7 +37,7 @@ export async function GET() {
         id: 1,
         question: "",
         option: {},
-        section: "",
+        topic: "",
         image: "",
         answer: "",
         solution: "",
@@ -70,7 +69,6 @@ export async function GET() {
     });
 
     console.log(questions);
-
     return NextResponse.json({ questions: questions });
   } catch (error) {
     console.log(error);
