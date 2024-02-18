@@ -77,7 +77,7 @@ export default function SetupForm() {
   const startExam: SubmitHandler<CbtShemaType> = async (data) => {
     const submitData = { examType: data.examType, subjects };
     try {
-      const url = `http://localhost:3000/api/exam`;
+      const url = `http://localhost:3000/api/scrape`;
       const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify(submitData),
@@ -94,26 +94,6 @@ export default function SetupForm() {
       console.log(data);
 
       return data;
-
-      //   let newQuestions = await Promise.all(
-      //     subjects.map(async (subject: string) => {
-      //       const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
-      //       const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
-      //       const response = await fetch(url, {
-      //         headers: {
-      //           Accept: "application/json",
-      //           "Content-Type": "application/json",
-      //           AccessToken: "ALOC-caa562dfeb1a7de83a69",
-      //         },
-      //         method: "GET",
-      //       });
-      //       if (!response.ok) {
-      //         throw new Error(`HTTP error! Status: ${response.status}`);
-      //       }
-      //       const data = await response.json();
-      //       return { subject: data.subject, data: data.data };
-      //     }),
-      //   );
 
       //   const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
       //     duration: 7200,
