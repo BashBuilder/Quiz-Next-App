@@ -54,6 +54,7 @@ export default function ExamCard() {
     )[0];
     newQuestions && setQuestions(newQuestions);
     setQuestionIndex(0);
+
     // eslint-disable-next-line
   }, [selectedSubject]);
 
@@ -62,7 +63,25 @@ export default function ExamCard() {
     const correctColor = "bg-green-500 text-white";
     const wrongColor = "bg-red-500 text-white";
 
-    const currentQuestion = questions.data[questionIndex];
+    let q;
+    let currentQuestion;
+    for (let i = 0; i < questions.data.length; i++) {
+      if (questions.data[i].questionNub == questionIndex) {
+        console.log(questionIndex);
+        console.log(questions.data[i].questionNub);
+        q = questions.data[i];
+      }
+    }
+
+    if (q) {
+      currentQuestion = q;
+    } else {
+      currentQuestion = questions.data[questionIndex];
+    }
+    // const currentQ = questions.data.filter(
+    //   (question) => question.questionNub === questionIndex,
+    // );
+
     const { option, question, image: questionImage } = currentQuestion;
     const { subject } = questions;
 

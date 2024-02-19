@@ -12,6 +12,7 @@ export interface QuestionData {
   question: string;
   section: string;
   solution: string;
+  questionNub: number;
 }
 export interface QuestionOption {
   a: string;
@@ -39,6 +40,7 @@ const initialState: Questions[] | null = [
         question: "",
         section: "",
         solution: "",
+        questionNub: 0,
       },
     ],
   },
