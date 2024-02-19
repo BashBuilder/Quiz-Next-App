@@ -48,38 +48,20 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json(); // Await the resolved value of the promise
+    const body = await req.json();
     const token = "ALOC-caa562dfeb1a7de83a69";
-    const { subjects, examType } = body;
+    const { subjects } = body;
 
-    const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
-
-    // const response = await fetch(url, {
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     AccessToken: token,
-    //   },
-    //   method: "GET",
-    // });
-    // const data = await response.json();
-    // if (!response.ok) {
-    //   console.log(data);
-    //   throw new Error(`HTTP error! Status: ${response.status}`);
-    // }
-    // const results = { subject: data.subject, data: data.data };
-    // console.log(results);
-
-    // return NextResponse.json(results);
-
+    console.log(subjects);
     let newQuestions = await Promise.all(
       subjects.map(async (subject: string) => {
-        const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
+        // const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
+        const url = `https://questions.aloc.com.ng/api/v2/m/${subject === "english" ? 60 : 40}?subject=${subject}&year=2020`;
         const response = await fetch(url, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            AccessToken: "ALOC-caa562dfeb1a7de83a69",
+            AccessToken: token,
           },
           method: "GET",
         });
@@ -90,6 +72,8 @@ export async function POST(req: NextRequest) {
         return { subject: data.subject, data: data.data };
       }),
     );
+    console.log(newQuestions);
+    return NextResponse.json(newQuestions);
   } catch (error) {
     console.error("Error parsing request body:", error);
     return NextResponse.error();
@@ -101,3 +85,23 @@ export async function POST(req: NextRequest) {
 
 // Get any 40 questions by subject and year
 // const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
+
+// const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
+
+// const response = await fetch(url, {
+//   headers: {
+//     Accept: "application/json",
+//     "Content-Type": "application/json",
+//     AccessToken: token,
+//   },
+//   method: "GET",
+// });
+// const data = await response.json();
+// if (!response.ok) {
+//   console.log(data);
+//   throw new Error(`HTTP error! Status: ${response.status}`);
+// }
+// const results = { subject: data.subject, data: data.data };
+// console.log(results);
+
+// return NextResponse.json(results);

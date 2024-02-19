@@ -91,19 +91,15 @@ export default function SetupForm() {
         console.log(data);
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      console.log(data);
-      const newQuestions = { subject: data.subject, data: data.data };
-
-      // return data;
 
       const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
         duration: 7200,
         isExamStarted: true,
       };
 
-      localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
+      localStorage.setItem("allQuestions", JSON.stringify(data));
       localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
-      dispatch(fetchQuestions(newQuestions));
+      dispatch(fetchQuestions(data));
       dispatch(setTimerTime(EXAM_TIME.duration));
       router.push("/exam");
     } catch (error: any) {

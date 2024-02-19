@@ -9,12 +9,6 @@ import { useState } from "react";
 export default function Exam() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
-  isSubmitModalOpen
-    ? (document.body.style.overflow = "hidden")
-    : (document.body.style.overflow = "auto");
-
-  // const reducerAnswer = useSele
-
   return (
     <section className="relative flex min-h-screen flex-col gap-4 bg-slate-900 py-3 md:py-6 ">
       <SubmitModal

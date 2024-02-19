@@ -26,7 +26,7 @@ export default function ExamCard() {
   const allQuestions = useSelector((state: Rootstate) => state.questions);
   const reducerAnswer = useSelector((state: Rootstate) => state.answer);
 
-  const { answers, selectedOptions, isSubmitted, score } = reducerAnswer;
+  const { answers, selectedOptions, isSubmitted } = reducerAnswer;
 
   // fetch questions from local storage
   useEffect(() => {
@@ -37,6 +37,8 @@ export default function ExamCard() {
     dispatch(fetchQuestions(allQuestionReload));
     setQuestions(allQuestionReload[0]);
     dispatch(getAnswers(allQuestionReload));
+
+    console.log(allQuestionReload);
     // eslint-disable-next-line
   }, []);
 
@@ -101,22 +103,20 @@ export default function ExamCard() {
                   key={qIndex}
                   className={` ${qIndex === questionIndex ? "flex flex-col gap-4" : "hidden"} `}
                 >
-                  <div className="flex gap-1">
+                  {currentQuestion.section && (
+                    <p
+                      className=" text-xl font-bold first-letter:capitalize "
+                      dangerouslySetInnerHTML={{
+                        __html: currentQuestion.section,
+                      }}
+                    />
+                  )}
+                  <div className="flex  gap-1 ">
                     <p className="text-xl">{currentNum}.</p>
-                    {Array.isArray(question) ? (
-                      question.map((q, index) => (
-                        <p
-                          className="mb-4"
-                          key={index}
-                          dangerouslySetInnerHTML={{ __html: q }}
-                        />
-                      ))
-                    ) : (
-                      <p
-                        className="text-xl"
-                        dangerouslySetInnerHTML={{ __html: question }}
-                      />
-                    )}
+                    <p
+                      className="text-xl"
+                      dangerouslySetInnerHTML={{ __html: question }}
+                    />
                     {questionImage && (
                       <Image src={`${questionImage}`} alt="question image" />
                     )}
