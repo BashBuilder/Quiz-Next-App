@@ -92,19 +92,20 @@ export default function SetupForm() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       console.log(data);
+      const newQuestions = { subject: data.subject, data: data.data };
 
-      return data;
+      // return data;
 
-      //   const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
-      //     duration: 7200,
-      //     isExamStarted: true,
-      //   };
+      const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
+        duration: 7200,
+        isExamStarted: true,
+      };
 
-      //   localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
-      //   localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
-      //   dispatch(fetchQuestions(newQuestions));
-      //   dispatch(setTimerTime(EXAM_TIME.duration));
-      //   router.push("/exam");
+      localStorage.setItem("allQuestions", JSON.stringify(newQuestions));
+      localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
+      dispatch(fetchQuestions(newQuestions));
+      dispatch(setTimerTime(EXAM_TIME.duration));
+      router.push("/exam");
     } catch (error: any) {
       console.error("The error from fetching is ", error);
     }

@@ -19,6 +19,7 @@ export async function GET() {
 // console.log(submitData);
 
 // NextResponse.json(submitData);
+
 //  const submit = { examType: data.examType, subjects };
 //   try {
 //     let newQuestions = await Promise.all(
@@ -51,33 +52,52 @@ export async function POST(req: NextRequest) {
     const token = "ALOC-caa562dfeb1a7de83a69";
     const { subjects, examType } = body;
 
-    console.log(body);
+    const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
 
-    // Get any 40 random questions
-    // const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subjects[1]}`;
+    // const response = await fetch(url, {
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //     AccessToken: token,
+    //   },
+    //   method: "GET",
+    // });
+    // const data = await response.json();
+    // if (!response.ok) {
+    //   console.log(data);
+    //   throw new Error(`HTTP error! Status: ${response.status}`);
+    // }
+    // const results = { subject: data.subject, data: data.data };
+    // console.log(results);
 
-    // Get any 40 questions by subject and year
-    const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=chemistry&year=2005`;
+    // return NextResponse.json(results);
 
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        AccessToken: token,
-      },
-      method: "GET",
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      console.log(data);
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const results = { subject: data.subject, data: data.data };
-    console.log(results);
-
-    return NextResponse.json(results);
+    let newQuestions = await Promise.all(
+      subjects.map(async (subject: string) => {
+        const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
+        const response = await fetch(url, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            AccessToken: "ALOC-caa562dfeb1a7de83a69",
+          },
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        return { subject: data.subject, data: data.data };
+      }),
+    );
   } catch (error) {
     console.error("Error parsing request body:", error);
     return NextResponse.error();
   }
 }
+
+// Get any 40 random questions
+// const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subjects[1]}`;
+
+// Get any 40 questions by subject and year
+// const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;

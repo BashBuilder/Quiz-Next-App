@@ -16,8 +16,36 @@ interface Question {
 
 export async function GET() {
   try {
+    const categories = [
+      "english-grammar",
+      "word-classes",
+      "phrasal-verb",
+      "sentence-classification",
+      "tense-and-aspect",
+      "concord",
+      "question-tag",
+      "language-registers",
+      "reported-speech",
+      "punctuation",
+      "idiomatic-expression",
+      "oral-english",
+      "the-sound-system",
+      "vowels",
+      "consonants",
+      "syllable",
+      "stress",
+      "intonation",
+      "comprehension",
+      "concept-of-comprehension",
+      "topic-sentence",
+      "sentence-interpretation",
+      "summary-writing",
+      "grammatical-applications",
+      "writing",
+    ];
     const url =
-      "https://myschool.ng/classroom/english-language?exam_type=jamb&page=3";
+      // "https://myschool.ng/classroom/english-language?exam_type=jamb&page=3";
+      "https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=word-classes&novel=";
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
     const questionItemElements = $(".question-item");
@@ -37,7 +65,7 @@ export async function GET() {
         id: 1,
         question: "",
         option: {},
-        topic: "",
+        topic: "word-classes",
         image: "",
         answer: "",
         solution: "",
