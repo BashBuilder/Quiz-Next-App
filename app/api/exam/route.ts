@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
     console.log(subjects);
     let newQuestions = await Promise.all(
       subjects.map(async (subject: string) => {
-        // const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
-        const url = `https://questions.aloc.com.ng/api/v2/m/${subject === "english" ? 60 : 40}?subject=${subject}&year=2020`;
+        // const url = `https://questions.aloc.com.ng/api/v2/m/${subject === "english" ? 60 : 40}?subject=${subject}&year=2020`;
+        const url = `https://questions.aloc.com.ng/api/v2/m/${60}?subject=${subject}&year=2010`;
         const response = await fetch(url, {
           headers: {
             Accept: "application/json",
@@ -87,6 +87,9 @@ export async function POST(req: NextRequest) {
 // const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
 
 // const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
+
+// another request type
+// const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
 
 // const response = await fetch(url, {
 //   headers: {

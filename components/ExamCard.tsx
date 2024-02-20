@@ -66,11 +66,7 @@ export default function ExamCard() {
     let q;
     let currentQuestion;
     for (let i = 0; i < questions.data.length; i++) {
-      if (questions.data[i].questionNub == questionIndex) {
-        console.log(questionIndex);
-        console.log(questions.data[i].questionNub);
-        q = questions.data[i];
-      }
+      if (questions.data[i].questionNub == questionIndex) q = questions.data[i];
     }
 
     if (q) {
@@ -78,9 +74,6 @@ export default function ExamCard() {
     } else {
       currentQuestion = questions.data[questionIndex];
     }
-    // const currentQ = questions.data.filter(
-    //   (question) => question.questionNub === questionIndex,
-    // );
 
     const { option, question, image: questionImage } = currentQuestion;
     const { subject } = questions;

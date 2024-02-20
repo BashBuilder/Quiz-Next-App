@@ -43,63 +43,118 @@ export async function GET() {
       "grammatical-applications",
       "writing",
     ];
-    const url =
-      // "https://myschool.ng/classroom/english-language?exam_type=jamb&page=3";
-      "https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=word-classes&novel=";
-    const response = await axios.get(url);
-    const $ = cheerio.load(response.data);
-    const questionItemElements = $(".question-item");
 
-    const questions: Question[] = [];
-
-    const opt = {
-      [0]: "a",
-      [1]: "b",
-      [2]: "c",
-      [3]: "d",
-      [4]: "e",
-    };
-
-    questionItemElements.each((index, element) => {
-      let currentQuestion: Question = {
-        id: 1,
-        question: "",
-        option: {},
-        topic: "word-classes",
-        image: "",
-        answer: "",
-        solution: "",
-        examtype: "utme",
-        examyear: "2023",
-      };
-      let option = {};
-
-      const questionDescElement = $(element).find(".question-desc");
-      const question = questionDescElement
-        .find("p")
-        .map((i, el) => $(el).html())
-        .get();
-
-      $(element)
-        .find("ul.list-unstyled li")
-        .each((optionIndex, optionElement) => {
-          const optionText = $(optionElement).text().trim();
-          const modifiedOption = optionText.substring(3);
-          option = {
-            ...option,
-            // @ts-ignore
-            [opt[optionIndex]]: modifiedOption,
+    let newQuestions = await Promise.all(
+      categories.map(async (category: string) => {
+        const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=${category}&novel=`;
+        const response = await axios.get(url);
+        const $ = cheerio.load(response.data);
+        const questionItemElements = $(".question-item");
+        const questions: Question[] = [];
+        const opt = {
+          [0]: "a",
+          [1]: "b",
+          [2]: "c",
+          [3]: "d",
+          [4]: "e",
+        };
+        questionItemElements.each((index, element) => {
+          let currentQuestion: Question = {
+            id: 1,
+            question: "",
+            option: {},
+            topic: category,
+            image: "",
+            answer: "",
+            solution: "",
+            examtype: "utme",
+            examyear: "2023",
           };
+          let option = {};
+
+          const questionDescElement = $(element).find(".question-desc");
+          const question = questionDescElement
+            .find("p")
+            .map((i, el) => $(el).html())
+            .get();
+
+          $(element)
+            .find("ul.list-unstyled li")
+            .each((optionIndex, optionElement) => {
+              const optionText = $(optionElement).text().trim();
+              const modifiedOption = optionText.substring(3);
+              option = {
+                ...option,
+                // @ts-ignore
+                [opt[optionIndex]]: modifiedOption,
+              };
+            });
+          currentQuestion = { ...currentQuestion, question, option };
+
+          questions.push(currentQuestion);
         });
-      currentQuestion = { ...currentQuestion, question, option };
 
-      questions.push(currentQuestion);
-    });
+        return { questions };
+      }),
+    );
 
-    console.log(questions);
-    return NextResponse.json({ questions: questions });
+    console.log(newQuestions);
+    return NextResponse.json({ questions: newQuestions });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: "error occured" });
   }
 }
+
+// const url =
+//   // "https://myschool.ng/classroom/english-language?exam_type=jamb&page=3";
+//   "https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=word-classes&novel=";
+// const response = await axios.get(url);
+// const $ = cheerio.load(response.data);
+// const questionItemElements = $(".question-item");
+
+// const questions: Question[] = [];
+
+// const opt = {
+//   [0]: "a",
+//   [1]: "b",
+//   [2]: "c",
+//   [3]: "d",
+//   [4]: "e",
+// };
+
+// questionItemElements.each((index, element) => {
+//   let currentQuestion: Question = {
+//     id: 1,
+//     question: "",
+//     option: {},
+//     topic: "word-classes",
+//     image: "",
+//     answer: "",
+//     solution: "",
+//     examtype: "utme",
+//     examyear: "2023",
+//   };
+//   let option = {};
+
+//   const questionDescElement = $(element).find(".question-desc");
+//   const question = questionDescElement
+//     .find("p")
+//     .map((i, el) => $(el).html())
+//     .get();
+
+//   $(element)
+//     .find("ul.list-unstyled li")
+//     .each((optionIndex, optionElement) => {
+//       const optionText = $(optionElement).text().trim();
+//       const modifiedOption = optionText.substring(3);
+//       option = {
+//         ...option,
+//         // @ts-ignore
+//         [opt[optionIndex]]: modifiedOption,
+//       };
+//     });
+//   currentQuestion = { ...currentQuestion, question, option };
+
+//   questions.push(currentQuestion);
+// });
