@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import cheerio from "cheerio";
+import { englishCategories } from "@/lib/categoriesData";
 
 interface Question {
   id: number;
-  question: string | string[];
+  question: string | null;
   option: Object;
   topic: string;
+  section: string;
   image: string;
   answer: string;
   solution: string;
@@ -16,83 +18,113 @@ interface Question {
 
 export async function GET() {
   try {
-    const categories = [
-      "english-grammar",
-      "word-classes",
-      "phrasal-verb",
-      "sentence-classification",
-      "tense-and-aspect",
-      "concord",
-      "question-tag",
-      "language-registers",
-      "reported-speech",
-      "punctuation",
-      "idiomatic-expression",
-      "oral-english",
-      "the-sound-system",
-      "vowels",
-      "consonants",
-      "syllable",
-      "stress",
-      "intonation",
-      "comprehension",
-      "concept-of-comprehension",
-      "topic-sentence",
-      "sentence-interpretation",
-      "summary-writing",
-      "grammatical-applications",
-      "writing",
-    ];
-
+    const opt = {
+      [0]: "a",
+      [1]: "b",
+      [2]: "c",
+      [3]: "d",
+      [4]: "e",
+    };
     let newQuestions = await Promise.all(
-      categories.map(async (category: string) => {
+      englishCategories.map(async (category: string) => {
         const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=${category}&novel=`;
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
+        const numberOfPages = $("page-item");
         const questionItemElements = $(".question-item");
         const questions: Question[] = [];
-        const opt = {
-          [0]: "a",
-          [1]: "b",
-          [2]: "c",
-          [3]: "d",
-          [4]: "e",
-        };
-        questionItemElements.each((index, element) => {
-          let currentQuestion: Question = {
-            id: 1,
-            question: "",
-            option: {},
-            topic: category,
-            image: "",
-            answer: "",
-            solution: "",
-            examtype: "utme",
-            examyear: "2023",
-          };
-          let option = {};
-
-          const questionDescElement = $(element).find(".question-desc");
-          const question = questionDescElement
-            .find("p")
-            .map((i, el) => $(el).html())
-            .get();
-
-          $(element)
-            .find("ul.list-unstyled li")
-            .each((optionIndex, optionElement) => {
-              const optionText = $(optionElement).text().trim();
-              const modifiedOption = optionText.substring(3);
-              option = {
-                ...option,
-                // @ts-ignore
-                [opt[optionIndex]]: modifiedOption,
+        if (numberOfPages) {
+          numberOfPages.map(async (index, element) => {
+            const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=${category}&page=${index}`;
+            const pagesResponse = await axios.get(url);
+            const ch = cheerio.load(pagesResponse.data);
+            const questionItemElements = ch(".question-item");
+            questionItemElements.each((index, element) => {
+              let currentQuestion: Question = {
+                id: 1,
+                question: "",
+                section: "",
+                option: {},
+                topic: category,
+                image: "",
+                answer: "",
+                solution: "",
+                examtype: "utme",
+                examyear: "2023",
               };
-            });
-          currentQuestion = { ...currentQuestion, question, option };
+              let option = {};
 
-          questions.push(currentQuestion);
-        });
+              const questionDescElement = ch(element).find(".question-desc");
+              let question: string | null = "";
+              let section: string | null = "";
+              if (questionDescElement.find("p").length > 1) {
+                questionDescElement.find("p").each((i, el) => {
+                  i === 0
+                    ? (section = ch(el).html())
+                    : (question = ch(el).html());
+                });
+              } else {
+                question = questionDescElement.find("p").html();
+              }
+              ch(element)
+                .find("ul.list-unstyled li")
+                .each((optionIndex, optionElement) => {
+                  const optionText = ch(optionElement).text().trim();
+                  const modifiedOption = optionText.substring(3);
+                  option = {
+                    ...option,
+                    // @ts-ignore
+                    [opt[optionIndex]]: modifiedOption,
+                  };
+                });
+              currentQuestion = { ...currentQuestion, question, option };
+
+              questions.push(currentQuestion);
+            });
+          });
+        } else {
+          questionItemElements.each((index, element) => {
+            let currentQuestion: Question = {
+              id: 1,
+              question: "",
+              section: "",
+              option: {},
+              topic: category,
+              image: "",
+              answer: "",
+              solution: "",
+              examtype: "utme",
+              examyear: "2023",
+            };
+            let option = {};
+
+            const questionDescElement = $(element).find(".question-desc");
+            let question: string | null = "";
+            let section: string | null = "";
+            if (questionDescElement.find("p").length > 1) {
+              questionDescElement.find("p").each((i, el) => {
+                i === 0 ? (section = $(el).html()) : (question = $(el).html());
+              });
+            } else {
+              question = questionDescElement.find("p").html();
+            }
+
+            $(element)
+              .find("ul.list-unstyled li")
+              .each((optionIndex, optionElement) => {
+                const optionText = $(optionElement).text().trim();
+                const modifiedOption = optionText.substring(3);
+                option = {
+                  ...option,
+                  // @ts-ignore
+                  [opt[optionIndex]]: modifiedOption,
+                };
+              });
+            currentQuestion = { ...currentQuestion, question, option };
+
+            questions.push(currentQuestion);
+          });
+        }
 
         return { questions };
       }),
