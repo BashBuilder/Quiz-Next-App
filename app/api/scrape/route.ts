@@ -30,7 +30,7 @@ export async function GET() {
         const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=${category}&novel=`;
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
-        const numberOfPages = $("page-item");
+        const numberOfPages = $(".page-item");
         const questionItemElements = $(".question-item");
         const questions: Question[] = [];
         if (numberOfPages) {
@@ -41,7 +41,7 @@ export async function GET() {
             const questionItemElements = ch(".question-item");
             questionItemElements.each((index, element) => {
               let currentQuestion: Question = {
-                id: 1,
+                id: index,
                 question: "",
                 section: "",
                 option: {},
@@ -77,15 +77,14 @@ export async function GET() {
                     [opt[optionIndex]]: modifiedOption,
                   };
                 });
-              currentQuestion = { ...currentQuestion, question, option };
-
-              questions.push(currentQuestion);
+              // currentQuestion = { ...currentQuestion, question, option };
+              questions.push({ ...currentQuestion, question, option });
             });
           });
         } else {
           questionItemElements.each((index, element) => {
             let currentQuestion: Question = {
-              id: 1,
+              id: index,
               question: "",
               section: "",
               option: {},
@@ -122,7 +121,7 @@ export async function GET() {
               });
             currentQuestion = { ...currentQuestion, question, option };
 
-            questions.push(currentQuestion);
+            questions.push({ ...currentQuestion, question, option });
           });
         }
 
