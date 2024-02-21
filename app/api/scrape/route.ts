@@ -25,20 +25,22 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
+    const year = 2023;
     let newQuestions = await Promise.all(
       englishCategories.map(async (category: string) => {
-        const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=${category}&novel=`;
+        const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&novel=`;
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
         const numberOfPages = $(".page-item");
-        const questionItemElements = $(".question-item");
         const questions: Question[] = [];
+        // console.log(numberOfPages);
         if (numberOfPages) {
           numberOfPages.map(async (index, element) => {
-            const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=${category}&page=${index}`;
-            const pagesResponse = await axios.get(url);
-            const ch = cheerio.load(pagesResponse.data);
-            const questionItemElements = ch(".question-item");
+            const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&page=${index}`;
+            const pagesResponse = await axios.get(uri);
+            const $ = cheerio.load(pagesResponse.data);
+            const questionItemElements = $(".question-item");
+            const passage = $(".card-body").find("p").html();
             questionItemElements.each((index, element) => {
               let currentQuestion: Question = {
                 id: index,
@@ -54,22 +56,23 @@ export async function GET() {
               };
               let option = {};
 
-              const questionDescElement = ch(element).find(".question-desc");
+              const questionDescElement = $(element).find(".question-desc");
               let question: string | null = "";
               let section: string | null = "";
               if (questionDescElement.find("p").length > 1) {
                 questionDescElement.find("p").each((i, el) => {
                   i === 0
-                    ? (section = ch(el).html())
-                    : (question = ch(el).html());
+                    ? (section = $(el).html())
+                    : (question = $(el).html());
                 });
               } else {
                 question = questionDescElement.find("p").html();
+                passage && (section = passage);
               }
-              ch(element)
+              $(element)
                 .find("ul.list-unstyled li")
                 .each((optionIndex, optionElement) => {
-                  const optionText = ch(optionElement).text().trim();
+                  const optionText = $(optionElement).text().trim();
                   const modifiedOption = optionText.substring(3);
                   option = {
                     ...option,
@@ -77,11 +80,11 @@ export async function GET() {
                     [opt[optionIndex]]: modifiedOption,
                   };
                 });
-              // currentQuestion = { ...currentQuestion, question, option };
-              questions.push({ ...currentQuestion, question, option });
+              questions.push({ ...currentQuestion, question, option, section });
             });
           });
         } else {
+          const questionItemElements = $(".question-item");
           questionItemElements.each((index, element) => {
             let currentQuestion: Question = {
               id: index,
@@ -119,12 +122,10 @@ export async function GET() {
                   [opt[optionIndex]]: modifiedOption,
                 };
               });
-            currentQuestion = { ...currentQuestion, question, option };
-
-            questions.push({ ...currentQuestion, question, option });
+            // currentQuestion = { ...currentQuestion, question, option, section };
+            questions.push({ ...currentQuestion, question, section, option });
           });
         }
-
         return { questions };
       }),
     );
