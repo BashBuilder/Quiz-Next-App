@@ -31,17 +31,17 @@ export async function GET() {
         const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&novel=`;
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
-        const numberOfPages = $(".page-item");
+        const numberOfPages = $(".page-item").get().length;
         const questions: Question[] = [];
-        // console.log(numberOfPages);
         if (numberOfPages) {
-          numberOfPages.map(async (index, element) => {
+          // numberOfPages.map(async (index, element) => {
+          for (let index = 0; index < numberOfPages; index++) {
             const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&page=${index}`;
             const pagesResponse = await axios.get(uri);
-            const $ = cheerio.load(pagesResponse.data);
-            const questionItemElements = $(".question-item");
-            const passage = $(".card-body").find("p").html();
-            questionItemElements.each((index, element) => {
+            const $page = cheerio.load(pagesResponse.data);
+            const pageQuestionItemElements = $page(".question-item");
+            const passage = $page(".card-body").find("p").html();
+            pageQuestionItemElements.each((index, element) => {
               let currentQuestion: Question = {
                 id: index,
                 question: "",
@@ -56,23 +56,23 @@ export async function GET() {
               };
               let option = {};
 
-              const questionDescElement = $(element).find(".question-desc");
+              const questionDescElement = $page(element).find(".question-desc");
               let question: string | null = "";
               let section: string | null = "";
               if (questionDescElement.find("p").length > 1) {
                 questionDescElement.find("p").each((i, el) => {
                   i === 0
-                    ? (section = $(el).html())
-                    : (question = $(el).html());
+                    ? (section = $page(el).html())
+                    : (question = $page(el).html());
                 });
               } else {
                 question = questionDescElement.find("p").html();
                 passage && (section = passage);
               }
-              $(element)
+              $page(element)
                 .find("ul.list-unstyled li")
                 .each((optionIndex, optionElement) => {
-                  const optionText = $(optionElement).text().trim();
+                  const optionText = $page(optionElement).text().trim();
                   const modifiedOption = optionText.substring(3);
                   option = {
                     ...option,
@@ -82,7 +82,7 @@ export async function GET() {
                 });
               questions.push({ ...currentQuestion, question, option, section });
             });
-          });
+          }
         } else {
           const questionItemElements = $(".question-item");
           questionItemElements.each((index, element) => {
@@ -137,56 +137,3 @@ export async function GET() {
     return NextResponse.json({ error: "error occured" });
   }
 }
-
-// const url =
-//   // "https://myschool.ng/classroom/english-language?exam_type=jamb&page=3";
-//   "https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2023&topic=word-classes&novel=";
-// const response = await axios.get(url);
-// const $ = cheerio.load(response.data);
-// const questionItemElements = $(".question-item");
-
-// const questions: Question[] = [];
-
-// const opt = {
-//   [0]: "a",
-//   [1]: "b",
-//   [2]: "c",
-//   [3]: "d",
-//   [4]: "e",
-// };
-
-// questionItemElements.each((index, element) => {
-//   let currentQuestion: Question = {
-//     id: 1,
-//     question: "",
-//     option: {},
-//     topic: "word-classes",
-//     image: "",
-//     answer: "",
-//     solution: "",
-//     examtype: "utme",
-//     examyear: "2023",
-//   };
-//   let option = {};
-
-//   const questionDescElement = $(element).find(".question-desc");
-//   const question = questionDescElement
-//     .find("p")
-//     .map((i, el) => $(el).html())
-//     .get();
-
-//   $(element)
-//     .find("ul.list-unstyled li")
-//     .each((optionIndex, optionElement) => {
-//       const optionText = $(optionElement).text().trim();
-//       const modifiedOption = optionText.substring(3);
-//       option = {
-//         ...option,
-//         // @ts-ignore
-//         [opt[optionIndex]]: modifiedOption,
-//       };
-//     });
-//   currentQuestion = { ...currentQuestion, question, option };
-
-//   questions.push(currentQuestion);
-// });
