@@ -25,7 +25,7 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
-    const year = 2023;
+    const year = 2021;
     let newQuestions = await Promise.all(
       englishCategories.map(async (category: string) => {
         const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&novel=`;
@@ -34,13 +34,24 @@ export async function GET() {
         const numberOfPages = $(".page-item").get().length;
         const questions: Question[] = [];
         if (numberOfPages) {
-          // numberOfPages.map(async (index, element) => {
           for (let index = 0; index < numberOfPages; index++) {
             const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&page=${index}`;
             const pagesResponse = await axios.get(uri);
             const $page = cheerio.load(pagesResponse.data);
             const pageQuestionItemElements = $page(".question-item");
-            const passage = $page(".card-body").find("p").html();
+            let passage: string = "";
+            const passageContent = $page(".card-body").find("p");
+            const passageCount = passageContent.get().length;
+            if (passageCount === 1) {
+              passage = passageContent.html() || ""; // Ensure to handle possible null or undefined
+            } else {
+              passageContent.each((i, el) => {
+                const htmlContent = $page(el).html();
+                passage += htmlContent || ""; // Ensure to handle possible null or undefined
+              });
+            }
+
+            // const passage = $page(".card-body").find("p").map((el, index) => )
             pageQuestionItemElements.each((index, element) => {
               let currentQuestion: Question = {
                 id: index,
@@ -110,7 +121,6 @@ export async function GET() {
             } else {
               question = questionDescElement.find("p").html();
             }
-
             $(element)
               .find("ul.list-unstyled li")
               .each((optionIndex, optionElement) => {
@@ -122,14 +132,12 @@ export async function GET() {
                   [opt[optionIndex]]: modifiedOption,
                 };
               });
-            // currentQuestion = { ...currentQuestion, question, option, section };
             questions.push({ ...currentQuestion, question, section, option });
           });
         }
-        return { questions };
+        return { [category]: questions };
       }),
     );
-
     console.log(newQuestions);
     return NextResponse.json({ questions: newQuestions });
   } catch (error) {
