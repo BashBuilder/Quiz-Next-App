@@ -31,8 +31,7 @@ export async function GET() {
     let newQuestions = await Promise.all(
       englishCategories.map(async (category: string) => {
         const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&novel=`;
-        //myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2020&topic=&novel=
-        https: const response = await axios.get(url);
+        const response = await axios.get(url);
         const $ = cheerio.load(response.data);
         const numberOfPages = $(".page-item").get().length;
         const questions: Question[] = [];
