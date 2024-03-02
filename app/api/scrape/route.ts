@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import cheerio from "cheerio";
 import { englishCategories } from "@/lib/categoriesData";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "@/lib/config";
 
 interface Question {
   id: number;
@@ -139,6 +141,8 @@ export async function GET() {
       }),
     );
     console.log(newQuestions);
+    const firestoreQuestion = collection(db, "english");
+    await addDoc(firestoreQuestion, newQuestions);
     return NextResponse.json({ questions: newQuestions });
   } catch (error) {
     console.log(error);
