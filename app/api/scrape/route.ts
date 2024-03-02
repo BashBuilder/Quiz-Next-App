@@ -15,7 +15,7 @@ interface Question {
   answer: string;
   solution: string;
   examtype: string;
-  examyear: string;
+  examyear: number;
 }
 
 export async function GET() {
@@ -27,11 +27,12 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
-    const year = 2021;
+    const year = 2020;
     let newQuestions = await Promise.all(
       englishCategories.map(async (category: string) => {
         const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&novel=`;
-        const response = await axios.get(url);
+        //myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2020&topic=&novel=
+        https: const response = await axios.get(url);
         const $ = cheerio.load(response.data);
         const numberOfPages = $(".page-item").get().length;
         const questions: Question[] = [];
@@ -65,7 +66,7 @@ export async function GET() {
                 answer: "",
                 solution: "",
                 examtype: "utme",
-                examyear: "2023",
+                examyear: year,
               };
               let option = {};
 
@@ -109,7 +110,7 @@ export async function GET() {
               answer: "",
               solution: "",
               examtype: "utme",
-              examyear: "2023",
+              examyear: year,
             };
             let option = {};
 
@@ -140,9 +141,9 @@ export async function GET() {
         return { [category]: questions };
       }),
     );
-    console.log(newQuestions);
+    // console.log(newQuestions);
     const firestoreQuestion = collection(db, "english");
-    await addDoc(firestoreQuestion, newQuestions);
+    await addDoc(firestoreQuestion, { questions: newQuestions });
     return NextResponse.json({ questions: newQuestions });
   } catch (error) {
     console.log(error);

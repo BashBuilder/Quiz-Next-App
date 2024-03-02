@@ -12,6 +12,7 @@ interface Question {
 }
 
 export const englishCategories = [
+  // "all",
   "english-grammar",
   "word-classes",
   "phrasal-verb",
