@@ -40,7 +40,7 @@ export async function GET() {
       const pagesResponse = await axios.get(uri);
       const $page = cheerio.load(pagesResponse.data);
       const pageQuestionItemElements = $page(".question-item");
-      const questionNum = $page(".questiion_sn").html();
+      let questionNum: string | null = "";
       let passage: string = "";
       const passageContent = $page(".card-body").find("p");
       const passageCount = passageContent.get().length;
@@ -67,6 +67,7 @@ export async function GET() {
           examyear: year,
         };
         let option = {};
+        questionNum = $page(element).find(".question_sn").text().trim();
 
         const questionDescElement = $page(element).find(".question-desc");
         let question: string | null = "";
@@ -103,8 +104,8 @@ export async function GET() {
     }
     console.log(questions);
     console.log(questions.length);
-    // const firestoreQuestion = collection(db, "english");
-    // await addDoc(firestoreQuestion, { questions});
+    const firestoreQuestion = collection(db, "english");
+    await addDoc(firestoreQuestion, { questions });
     return NextResponse.json({ questions });
   } catch (error) {
     console.log(error);
