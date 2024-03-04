@@ -27,7 +27,7 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
-    const year = 2020;
+    const year = 2022;
     // let newQuestions = await Promise.all(
     //   englishCategories.map(async (category: string) => {
     const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=&novel=`;
@@ -35,8 +35,8 @@ export async function GET() {
     const $ = cheerio.load(response.data);
     const numberOfPages = $(".page-item").get().length;
     const questions: Question[] = [];
-    for (let index = 0; index < numberOfPages; index++) {
-      const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=&novel=`;
+    for (let index = 0; index < numberOfPages - 2; index++) {
+      const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&page=${index}`;
       const pagesResponse = await axios.get(uri);
       const $page = cheerio.load(pagesResponse.data);
       const pageQuestionItemElements = $page(".question-item");
@@ -105,7 +105,7 @@ export async function GET() {
     console.log(questions);
     console.log(questions.length);
     const firestoreQuestion = collection(db, "english");
-    await addDoc(firestoreQuestion, { questions });
+    await addDoc(firestoreQuestion, { ...questions });
     return NextResponse.json({ questions });
   } catch (error) {
     console.log(error);
