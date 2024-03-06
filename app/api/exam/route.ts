@@ -1,50 +1,6 @@
+import { db } from "@/lib/config";
+import { collection, getDoc, getDocs } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
-
-export async function GET() {
-  // Your API logic here
-  console.log("hello the the server");
-  return NextResponse.json({
-    message: "Hello, world! this is the exam server",
-  });
-}
-
-// export async function POST(req: NextRequest, res: NextResponse) {
-//   const { searchParams } = new URL(req.url);
-//   const param = searchParams.get("");
-//   console.log(param);
-//   // console.log(req.json());
-//   return NextResponse.json({ success: "request recieved" });
-
-// const submitData = NextRequest.arguments;
-// console.log(submitData);
-
-// NextResponse.json(submitData);
-
-//  const submit = { examType: data.examType, subjects };
-//   try {
-//     let newQuestions = await Promise.all(
-//       subjects.map(async (subject: string) => {
-//         const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
-//         const response = await fetch(url, {
-//           headers: {
-//             Accept: "application/json",
-//             "Content-Type": "application/json",
-//             AccessToken: "ALOC-caa562dfeb1a7de83a69",
-//           },
-//           method: "GET",
-//         });
-//         if (!response.ok) {
-//           throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
-//         const data = await response.json();
-//         return { subject: data.subject, data: data.data };
-//       }),
-//     );
-//   } catch (error: any) {
-//     console.error("The error from fetching is ", error);
-//   }
-// }
-//
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,11 +8,25 @@ export async function POST(req: NextRequest) {
     const token = "ALOC-caa562dfeb1a7de83a69";
     const { subjects } = body;
 
-    console.log(subjects);
+    const newSubjects = subjects.splice(1, 3);
+    console.log(newSubjects);
+    const firestoreQuestion = collection(db, "english");
+    const englishSnapshot = await getDocs(firestoreQuestion);
+
+    // @ts-ignore
+    const englishQeustion = [];
+    const q = englishSnapshot.forEach((doc) =>
+      englishQeustion.push(doc.data()),
+    );
+
+    // @ts-ignore
+    const englishData = { subject: "english", data: englishQeustion[0] };
+
     let newQuestions = await Promise.all(
       subjects.map(async (subject: string) => {
         // const url = `https://questions.aloc.com.ng/api/v2/m/${subject === "english" ? 60 : 40}?subject=${subject}&year=2020`;
-        const url = `https://questions.aloc.com.ng/api/v2/m/${60}?subject=${subject}&year=2010`;
+        const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}&year=2020`;
+        // const url = `https://questions.aloc.com.ng/api/v2/m/${60}?subject=${subject}&year=2010`;
         const response = await fetch(url, {
           headers: {
             Accept: "application/json",
@@ -72,8 +42,12 @@ export async function POST(req: NextRequest) {
         return { subject: data.subject, data: data.data };
       }),
     );
-    console.log(newQuestions);
-    return NextResponse.json(newQuestions);
+
+    const sentQ = { ...newQuestions, ...englishData };
+    // console.log(newQuestions);
+    console.log(sentQ);
+    // return NextResponse.json(newQuestions);
+    return NextResponse.json(sentQ);
   } catch (error) {
     console.error("Error parsing request body:", error);
     return NextResponse.error();
@@ -90,21 +64,3 @@ export async function POST(req: NextRequest) {
 
 // another request type
 // const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}`;
-
-// const response = await fetch(url, {
-//   headers: {
-//     Accept: "application/json",
-//     "Content-Type": "application/json",
-//     AccessToken: token,
-//   },
-//   method: "GET",
-// });
-// const data = await response.json();
-// if (!response.ok) {
-//   console.log(data);
-//   throw new Error(`HTTP error! Status: ${response.status}`);
-// }
-// const results = { subject: data.subject, data: data.data };
-// console.log(results);
-
-// return NextResponse.json(results);

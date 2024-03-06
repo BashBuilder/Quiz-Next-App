@@ -6,19 +6,6 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/config";
 import { QuestionData } from "@/app/GlobalRedux/Features/questionSlice";
 
-// interface Question {
-//   id: number;
-//   question: string | null;
-//   option: Object;
-//   topic: string;
-//   section: string;
-//   image: string;
-//   answer: string;
-//   solution: string;
-//   examtype: string;
-//   examyear: number;
-// }
-
 export async function GET() {
   try {
     const opt = {
@@ -56,19 +43,20 @@ export async function GET() {
 
             // const passage = $page(".card-body").find("p").map((el, index) => )
             pageQuestionItemElements.each((index, element) => {
-              let currentQuestion: Question = {
-                id: index,
+              let currentQuestion: QuestionData = {
+                id: 0,
+                questionNub: 0,
                 question: "",
                 section: "",
-                option: {},
-                topic: category,
+                option: { a: "", b: "", c: "", d: "", e: "" },
+                topic: "",
                 image: "",
                 answer: "",
                 solution: "",
                 examtype: "utme",
-                examyear: year,
+                examyear: year.toString(),
               };
-              let option = {};
+              let option = { a: "", b: "", c: "", d: "", e: "" };
 
               const questionDescElement = $page(element).find(".question-desc");
               let question: string | null = "";
@@ -100,19 +88,20 @@ export async function GET() {
         } else {
           const questionItemElements = $(".question-item");
           questionItemElements.each((index, element) => {
-            let currentQuestion: Question = {
-              id: index,
+            let currentQuestion: QuestionData = {
+              id: 0,
+              questionNub: 0,
               question: "",
               section: "",
-              option: {},
-              topic: category,
+              option: { a: "", b: "", c: "", d: "", e: "" },
+              topic: "",
               image: "",
               answer: "",
               solution: "",
               examtype: "utme",
-              examyear: year,
+              examyear: year.toString(),
             };
-            let option = {};
+            let option = { a: "", b: "", c: "", d: "", e: "" };
 
             const questionDescElement = $(element).find(".question-desc");
             let question: string | null = "";
@@ -141,7 +130,7 @@ export async function GET() {
         return { [category]: questions };
       }),
     );
-    // console.log(newQuestions);
+    console.log(newQuestions);
     const firestoreQuestion = collection(db, "english");
     await addDoc(firestoreQuestion, { questions: newQuestions });
     return NextResponse.json({ questions: newQuestions });
