@@ -4,19 +4,20 @@ import cheerio from "cheerio";
 import { englishCategories } from "@/lib/categoriesData";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/config";
+import { QuestionData } from "@/app/GlobalRedux/Features/questionSlice";
 
-interface Question {
-  id: number;
-  question: string | null;
-  option: Object;
-  topic: string;
-  section: string;
-  image: string;
-  answer: string;
-  solution: string;
-  examtype: string;
-  examyear: number;
-}
+// interface Question {
+//   id: number;
+//   question: string | null;
+//   option: Object;
+//   topic: string;
+//   section: string;
+//   image: string;
+//   answer: string;
+//   solution: string;
+//   examtype: string;
+//   examyear: number;
+// }
 
 export async function GET() {
   try {
@@ -34,7 +35,7 @@ export async function GET() {
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
         const numberOfPages = $(".page-item").get().length;
-        const questions: Question[] = [];
+        const questions: QuestionData[] = [];
         if (numberOfPages) {
           for (let index = 0; index < numberOfPages; index++) {
             const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=${category}&page=${index}`;

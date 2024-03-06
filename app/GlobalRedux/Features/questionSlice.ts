@@ -9,10 +9,11 @@ export interface QuestionData {
   id: number;
   image: string;
   option: QuestionOption;
-  question: string;
+  question: string | null;
   section: string;
   solution: string;
   questionNub: number;
+  topic: string;
 }
 export interface QuestionOption {
   a: string;
@@ -41,6 +42,7 @@ const initialState: Questions[] | null = [
         section: "",
         solution: "",
         questionNub: 0,
+        topic: "",
       },
     ],
   },

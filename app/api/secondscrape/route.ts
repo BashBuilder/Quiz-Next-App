@@ -4,19 +4,20 @@ import cheerio from "cheerio";
 import { englishCategories } from "@/lib/categoriesData";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/config";
+import { QuestionData } from "@/app/GlobalRedux/Features/questionSlice";
 
-interface Question {
-  id: string | null;
-  question: string | null;
-  option: Object;
-  topic: string;
-  section: string;
-  image: string;
-  answer: string;
-  solution: string;
-  examtype: string;
-  examyear: number;
-}
+// interface Question {
+//   id: string | null;
+//   question: string | null;
+//   option: Object;
+//   topic: string;
+//   section: string;
+//   image: string;
+//   answer: string;
+//   solution: string;
+//   examtype: string;
+//   examyear: number;
+// }
 
 export async function GET() {
   try {
@@ -28,19 +29,17 @@ export async function GET() {
       [4]: "e",
     };
     const year = 2022;
-    // let newQuestions = await Promise.all(
-    //   englishCategories.map(async (category: string) => {
     const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=&novel=`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
     const numberOfPages = $(".page-item").get().length;
-    const questions: Question[] = [];
+    const questions: QuestionData[] = [];
     for (let index = 0; index < numberOfPages - 2; index++) {
       const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&page=${index}`;
       const pagesResponse = await axios.get(uri);
       const $page = cheerio.load(pagesResponse.data);
       const pageQuestionItemElements = $page(".question-item");
-      let questionNum: string | null = "";
+      let questionNub: number | null = 0;
       let passage: string = "";
       const passageContent = $page(".card-body").find("p");
       const passageCount = passageContent.get().length;
@@ -54,20 +53,23 @@ export async function GET() {
       }
 
       pageQuestionItemElements.each((index, element) => {
-        let currentQuestion: Question = {
-          id: "",
+        let currentQuestion: QuestionData = {
+          id: 0,
+          questionNub: 0,
           question: "",
           section: "",
-          option: {},
+          option: { a: "", b: "", c: "", d: "", e: "" },
           topic: "",
           image: "",
           answer: "",
           solution: "",
           examtype: "utme",
-          examyear: year,
+          examyear: year.toString(),
         };
-        let option = {};
-        questionNum = $page(element).find(".question_sn").text().trim();
+        let option = { a: "", b: "", c: "", d: "", e: "" };
+        questionNub = parseInt(
+          $page(element).find(".question_sn").text().trim(),
+        );
 
         const questionDescElement = $page(element).find(".question-desc");
         let question: string | null = "";
@@ -98,7 +100,8 @@ export async function GET() {
           question,
           option,
           section,
-          id: questionNum,
+          questionNub,
+          id: questionNub,
         });
       });
     }
