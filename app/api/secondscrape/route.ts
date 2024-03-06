@@ -6,19 +6,6 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/config";
 import { QuestionData } from "@/app/GlobalRedux/Features/questionSlice";
 
-// interface Question {
-//   id: string | null;
-//   question: string | null;
-//   option: Object;
-//   topic: string;
-//   section: string;
-//   image: string;
-//   answer: string;
-//   solution: string;
-//   examtype: string;
-//   examyear: number;
-// }
-
 export async function GET() {
   try {
     const opt = {
@@ -28,7 +15,7 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
-    const year = 2022;
+    const year = 2020;
     const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=&novel=`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
