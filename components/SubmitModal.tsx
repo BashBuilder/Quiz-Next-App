@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import { useDispatch } from "react-redux";
 import { submitAnswer } from "@/app/GlobalRedux/Features/answerSlice";
 import { endExam } from "@/app/GlobalRedux/Features/timerSlice";
+import { useRouter } from "next/navigation";
 
 interface SubmitModalProps {
   isSubmitModalOpen: boolean;
@@ -15,10 +16,12 @@ export default function SubmitModal({
   setIsSubmitModalOpen,
 }: SubmitModalProps) {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const submitQuestions = () => {
     dispatch(submitAnswer());
     dispatch(endExam());
+    router.push("/result");
   };
 
   return (

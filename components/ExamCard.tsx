@@ -125,10 +125,12 @@ export default function ExamCard() {
                   )}
                   <div className="flex  gap-1 ">
                     <p className="text-xl">{currentNum}.</p>
-                    <p
-                      className="text-xl"
-                      dangerouslySetInnerHTML={{ __html: question }}
-                    />
+                    {question && (
+                      <p
+                        className="text-xl"
+                        dangerouslySetInnerHTML={{ __html: question }}
+                      />
+                    )}
                     {questionImage && (
                       <Image src={`${questionImage}`} alt="question image" />
                     )}

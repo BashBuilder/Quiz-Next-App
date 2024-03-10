@@ -1,16 +1,3 @@
-interface Question {
-  id: number;
-  question: string | null;
-  option: Object;
-  topic: string;
-  section: string;
-  image: string;
-  answer: string;
-  solution: string;
-  examtype: string;
-  examyear: string;
-}
-
 export const englishCategories = [
   // "all",
   "english-grammar",

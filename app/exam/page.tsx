@@ -23,11 +23,6 @@ export default function Exam() {
         className="mx-auto w-2/5 min-w-20 max-w-32 rounded-xl bg-background "
         priority
       />
-      {/* {isSubmitted ? (
-        <div>
-          <h2 className="text-center">{score}</h2>
-        </div>
-      ) : ( */}
       <div className="mx-auto flex w-[90vw] max-w-5xl flex-col">
         <CounterDownTimer />
         <button

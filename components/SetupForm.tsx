@@ -88,15 +88,12 @@ export default function SetupForm() {
       });
       const data = await response.json();
       if (!response.ok) {
-        console.log(data);
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const EXAM_TIME: { duration: number; isExamStarted: boolean } = {
         duration: 7200,
         isExamStarted: true,
       };
-
       localStorage.setItem("allQuestions", JSON.stringify(data));
       localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
       dispatch(fetchQuestions(data));
@@ -109,15 +106,6 @@ export default function SetupForm() {
 
   return (
     <section className="relative flex h-screen min-h-[42rem] items-center justify-center overflow-hidden py-10 ">
-      <Image
-        src="/img/jBa.jpg"
-        alt="jamb"
-        width={200}
-        height={200}
-        className="pointer-events-none absolute left-0 top-0 -z-10 mx-auto h-full w-screen object-cover"
-        priority
-      />
-      <div className="absolute left-0 top-0 -z-[5] h-full w-screen bg-slate-700 opacity-80" />
       <div className="flex w-fit overflow-hidden rounded-3xl bg-background shadow-2xl ">
         <Image
           src="/img/closeup.png"

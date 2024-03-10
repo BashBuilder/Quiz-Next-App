@@ -7,26 +7,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const token = "ALOC-caa562dfeb1a7de83a69";
     const { subjects } = body;
-
     const newSubjects = subjects.splice(1, 3);
-    console.log(newSubjects);
-    const firestoreQuestion = collection(db, "english");
-    const englishSnapshot = await getDocs(firestoreQuestion);
 
+    const firestoreQuestion = collection(db, "englishCheck");
+    const englishSnapshot = await getDocs(firestoreQuestion);
     // @ts-ignore
     const englishQeustion = [];
     const q = englishSnapshot.forEach((doc) =>
       englishQeustion.push(doc.data()),
     );
-
     // @ts-ignore
-    const englishData = { subject: "english", data: englishQeustion[0] };
+    const englishData = { subject: "english", data: englishQeustion[0].data };
 
     let newQuestions = await Promise.all(
-      subjects.map(async (subject: string) => {
-        // const url = `https://questions.aloc.com.ng/api/v2/m/${subject === "english" ? 60 : 40}?subject=${subject}&year=2020`;
+      newSubjects.map(async (subject: string) => {
         const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subject}&year=2020`;
-        // const url = `https://questions.aloc.com.ng/api/v2/m/${60}?subject=${subject}&year=2010`;
         const response = await fetch(url, {
           headers: {
             Accept: "application/json",
@@ -42,11 +37,7 @@ export async function POST(req: NextRequest) {
         return { subject: data.subject, data: data.data };
       }),
     );
-
-    const sentQ = { ...newQuestions, ...englishData };
-    // console.log(newQuestions);
-    console.log(sentQ);
-    // return NextResponse.json(newQuestions);
+    const sentQ = [englishData, ...newQuestions];
     return NextResponse.json(sentQ);
   } catch (error) {
     console.error("Error parsing request body:", error);
@@ -54,12 +45,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Get any 40 random questions
-// const url = `https://questions.aloc.com.ng/api/v2/m/40?subject=${subjects[1]}`;
-
 // Get any 40 questions by subject and year
-// const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
-
 // const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=english&year=2005`;
 
 // another request type
