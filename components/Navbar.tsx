@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Fragment, useState } from "react";
 import SubmitModal from "./SubmitModal";
 import CounterDownTimer from "./CounterDownTimer";
+import { User2Icon } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -13,7 +14,7 @@ export default function Navbar() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 flex w-screen justify-between bg-primary px-10 py-2 shadow-sm ">
+    <nav className="fixed top-0 flex w-screen justify-between bg-primary px-10 pb-4 pt-2 shadow-sm ">
       <SubmitModal
         isSubmitModalOpen={isSubmitModalOpen}
         setIsSubmitModalOpen={setIsSubmitModalOpen}
@@ -24,7 +25,7 @@ export default function Navbar() {
           alt="jamb"
           width={200}
           height={200}
-          className="w-1/5 min-w-20 max-w-32  "
+          className="w-1/5 min-w-16 max-w-16"
           priority
         />
       </div>
@@ -41,20 +42,20 @@ export default function Navbar() {
         </div>
       ) : (
         <Fragment>
-          <ul className="max-w-s flex w-2/5 items-center justify-between font-semibold text-white">
-            <li>
+          <ul className="max-w-smd flex w-2/5 items-center justify-between font-semibold text-white">
+            <li className="relative transition-all after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:rounded-md after:bg-white after:duration-300 hover:text-slate-200 hover:after:w-full ">
               <Link href="/">Home</Link>
             </li>
-            <li>
+            <li className="relative transition-all after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:rounded-md after:bg-white after:duration-300 hover:text-slate-200 hover:after:w-full ">
               <Link href="/">Dashboard</Link>
             </li>
-            <li>
+            <li className="relative transition-all after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:rounded-md after:bg-white after:duration-300 hover:text-slate-200 hover:after:w-full ">
               <Link href="/">Exam</Link>
             </li>
           </ul>
-          <div className="my-auto">
-            <p>Logout</p>
-          </div>
+          <button className="my-auto flex items-center gap-2 border-2 border-white text-white duration-300  hover:border-green-400  hover:bg-green-400 ">
+            <User2Icon /> <span>Timmy</span>
+          </button>
         </Fragment>
       )}
     </nav>
