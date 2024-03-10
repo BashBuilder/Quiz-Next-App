@@ -79,11 +79,11 @@ export default function CounterDownTimer() {
   }, []);
 
   return (
-    <article className=" absolute right-4 top-20 mb-4  flex items-center justify-end gap-1 md:right-[12%]">
+    <article className="flex items-center justify-end gap-1 md:right-[12%]">
       <ExamCalculator isCalculatorShown={isCalculatorShown} />
 
       <Button
-        className="mr-5"
+        className="mr-5 "
         variant="outline"
         onClick={() => setIsCalculatorShown((shownState) => !shownState)}
       >

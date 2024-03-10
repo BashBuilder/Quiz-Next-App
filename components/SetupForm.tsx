@@ -105,14 +105,14 @@ export default function SetupForm() {
   };
 
   return (
-    <section className="relative flex h-screen min-h-[42rem] items-center justify-center overflow-hidden py-10 ">
+    <article className="relative flex h-screen min-h-[42rem] items-center justify-center overflow-hidden py-10 ">
       <div className="flex w-fit overflow-hidden rounded-3xl bg-background shadow-2xl ">
         <Image
           src="/img/closeup.png"
           alt="writing exam"
           width={200}
           height={200}
-          className="hidden h-full min-h-[38rem]  min-w-96 object-cover object-right md:inline"
+          className="hidden min-h-[10rem] min-w-80 object-cover object-right md:inline"
           priority
         />
         <form
@@ -131,7 +131,7 @@ export default function SetupForm() {
           </div>
           <h4 className="text-center"> JAMB CBT</h4>
           {/* Exam Type */}
-          <div className="mt-2 flex flex-col gap-2 ">
+          {/* <div className="mt-2 flex flex-col gap-2 ">
             <label className="font-semibold">Exam Type</label>
             <Controller
               control={control}
@@ -156,7 +156,7 @@ export default function SetupForm() {
                 );
               }}
             />
-          </div>
+          </div> */}
           {/* Subjects */}
           <div className="mt-2 flex flex-col gap-2 ">
             <label className="font-semibold">Subjects</label>
@@ -214,6 +214,6 @@ export default function SetupForm() {
           </Button>
         </form>
       </div>
-    </section>
+    </article>
   );
 }

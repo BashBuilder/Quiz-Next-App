@@ -93,10 +93,10 @@ export default function ExamCard() {
     )[0].answer;
 
     return (
-      <section className="relative flex min-h-screen flex-col gap-4 bg-slate-900 py-3 md:py-6 ">
+      <section className="mt-28 flex flex-col gap-4 ">
         {/* the subject panel */}
         <div className="mx-auto flex w-[90vw] max-w-5xl flex-col ">
-          <div className="mb-2 flex flex-wrap gap-2 ">
+          <div className="mb-4 flex flex-wrap gap-2 ">
             {allQuestions.map((question, index) => (
               <Button
                 key={index}
