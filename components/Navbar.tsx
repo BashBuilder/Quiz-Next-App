@@ -2,16 +2,58 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Fragment, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
 import SubmitModal from "./SubmitModal";
 import CounterDownTimer from "./CounterDownTimer";
-import { User2Icon } from "lucide-react";
+import { LogIn, User2Icon } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/config";
+import {
+  setAuthLoading,
+  setUserAuthentication,
+} from "@/app/GlobalRedux/Features/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Rootstate } from "@/app/GlobalRedux/store";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const userAuthReducer = useSelector((state: Rootstate) => state.auth);
+  const { userAuth, userEmail } = userAuthReducer;
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(setAuthLoading(true));
+    const listen = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(
+          setUserAuthentication({
+            token: user.refreshToken,
+            email: user.email,
+          }),
+        );
+      } else {
+        dispatch(
+          setUserAuthentication({
+            token: "",
+            email: "",
+          }),
+        );
+      }
+    });
+    dispatch(setAuthLoading(false));
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    // if (pathname.includes("auth") && userAuth) {
+    //   router.push("/");
+    // }
+    // eslint-disable-next-line
+  }, [userAuth]);
 
   return (
     <nav className="fixed top-0 flex w-screen justify-between bg-primary px-10 pb-4 pt-2 shadow-sm ">
@@ -53,9 +95,15 @@ export default function Navbar() {
               <Link href="/">Exam</Link>
             </li>
           </ul>
-          <button className="my-auto flex items-center gap-2 border-2 border-white text-white duration-300  hover:border-green-400  hover:bg-green-400 ">
-            <User2Icon /> <span>Timmy</span>
-          </button>
+          {userAuth ? (
+            <button className="my-auto flex items-center gap-2 border-2 border-white text-white duration-300  hover:border-green-400  hover:bg-green-400 ">
+              <User2Icon /> <span> {userEmail}</span>
+            </button>
+          ) : (
+            <button className="my-auto flex items-center gap-2 border-2 border-white text-white duration-300  hover:border-green-400  hover:bg-green-400 ">
+              <span>Sign Up</span> <LogIn />
+            </button>
+          )}
         </Fragment>
       )}
     </nav>

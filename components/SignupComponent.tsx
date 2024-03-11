@@ -1,12 +1,11 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -15,8 +14,9 @@ import z from "zod";
 import { auth, db } from "@/lib/config";
 import { addDoc, collection } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 
-export default function Signup() {
+export default function SignupComponent() {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false);
   const router = useRouter();
@@ -65,10 +65,14 @@ export default function Signup() {
       );
       const userId = user.user.uid;
       await sendEmailVerification(user.user);
+
       if (user.user.emailVerified) {
         const usersDb = await collection(db, "users");
         await addDoc(usersDb, { userId: userId, userEmail: user.user.email });
         router.push("/");
+        alert("email Verification completed");
+      } else {
+        alert("Email Verification sent");
       }
     } catch (error) {
       console.log(error);
@@ -77,6 +81,7 @@ export default function Signup() {
 
   return (
     <article className="flex h-screen items-center justify-center bg-green-200">
+      <Navbar />
       <form
         onSubmit={handleSubmit(signupUser)}
         className="flex w-11/12 max-w-md flex-col gap-6 rounded-md bg-white p-10 md:px-16 md:py-10 "

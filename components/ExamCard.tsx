@@ -1,5 +1,4 @@
 "use client";
-
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,7 +14,6 @@ import {
 } from "@/app/GlobalRedux/Features/answerSlice";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import CounterDownTimer from "./CounterDownTimer";
 
 export default function ExamCard() {
   const dispatch = useDispatch();
