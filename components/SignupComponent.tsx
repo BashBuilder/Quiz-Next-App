@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   createUserWithEmailAndPassword,
@@ -14,9 +13,13 @@ import z from "zod";
 import { auth, db } from "@/lib/config";
 import { addDoc, collection } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 
-export default function SignupComponent() {
+export interface SignupComponentType {
+  setIsSignupPage: Dispatch<SetStateAction<boolean>>;
+}
+export default function SignupComponent({
+  setIsSignupPage,
+}: SignupComponentType) {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false);
   const router = useRouter();
@@ -81,7 +84,6 @@ export default function SignupComponent() {
 
   return (
     <article className="flex h-screen items-center justify-center bg-green-200">
-      <Navbar />
       <form
         onSubmit={handleSubmit(signupUser)}
         className="flex w-11/12 max-w-md flex-col gap-6 rounded-md bg-white p-10 md:px-16 md:py-10 "
@@ -137,14 +139,15 @@ export default function SignupComponent() {
         <Button>
           {isSubmitting ? <Loader2 className="animate-spin" /> : "  Sign Up"}
         </Button>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center justify-between gap-5">
           <p>Already have an Account? </p>
-          <Link
-            href="/auth/signin"
+          <Button
             className="rounded-sm bg-green-800 px-4 py-2 text-white"
+            type="button"
+            onClick={() => setIsSignupPage((prev) => !prev)}
           >
             Login Here
-          </Link>
+          </Button>
         </div>
       </form>
     </article>

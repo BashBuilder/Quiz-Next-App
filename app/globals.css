@@ -62,7 +62,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-slate-100 text-foreground;
+    @apply bg-green-100 text-foreground;
   }
   h1 {
     @apply text-5xl font-bold;

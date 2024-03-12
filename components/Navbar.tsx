@@ -21,7 +21,7 @@ export default function Navbar() {
   const router = useRouter();
   const dispatch = useDispatch();
   const userAuthReducer = useSelector((state: Rootstate) => state.auth);
-  const { userAuth, userEmail } = userAuthReducer;
+  const { userAuth, userEmail, isAuthLoading } = userAuthReducer;
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
@@ -29,6 +29,7 @@ export default function Navbar() {
     dispatch(setAuthLoading(true));
     const listen = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log("is email verified", user.emailVerified);
         dispatch(
           setUserAuthentication({
             token: user.refreshToken,
@@ -45,22 +46,22 @@ export default function Navbar() {
       }
     });
     dispatch(setAuthLoading(false));
+
+    if (!userAuth) {
+      router.push("/cbt/auth");
+    } else if (pathname.includes("auth") && userAuth) {
+      router.push("/cbt/examform");
+    }
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
-    // if (pathname.includes("auth") && userAuth) {
-    //   router.push("/");
-    // }
-    // eslint-disable-next-line
-  }, [userAuth]);
-
   return (
-    <nav className="fixed top-0 flex w-screen justify-between bg-primary px-10 pb-4 pt-2 shadow-sm ">
+    <nav className="fixed top-0 z-10 flex w-screen justify-between bg-primary px-10 pb-4 pt-2 shadow-sm ">
       <SubmitModal
         isSubmitModalOpen={isSubmitModalOpen}
         setIsSubmitModalOpen={setIsSubmitModalOpen}
       />
+
       <div>
         <Image
           src="/img/jamblogo.png"
@@ -89,10 +90,10 @@ export default function Navbar() {
               <Link href="/">Home</Link>
             </li>
             <li className="relative transition-all after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:rounded-md after:bg-white after:duration-300 hover:text-slate-200 hover:after:w-full ">
-              <Link href="/">Dashboard</Link>
+              <Link href="/cbt/dashboard">Dashboard</Link>
             </li>
             <li className="relative transition-all after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:rounded-md after:bg-white after:duration-300 hover:text-slate-200 hover:after:w-full ">
-              <Link href="/">Exam</Link>
+              <Link href="/cbt/examform">Exam</Link>
             </li>
           </ul>
           {userAuth ? (

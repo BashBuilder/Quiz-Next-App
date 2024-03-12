@@ -1,16 +1,17 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
+import { SignupComponentType } from "./SignupComponent";
 
-export default function SigninComponent() {
+export default function SigninComponent({
+  setIsSignupPage,
+}: SignupComponentType) {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
 
   const signupSchema = z.object({
@@ -34,7 +35,6 @@ export default function SigninComponent() {
 
   return (
     <article className="flex h-screen items-center justify-center bg-green-200">
-      <Navbar />
       <form
         onSubmit={handleSubmit(signupUser)}
         className="flex w-11/12 max-w-md flex-col gap-6 rounded-md bg-white p-10 md:px-16 md:py-10 "
@@ -68,14 +68,14 @@ export default function SigninComponent() {
         <Button>
           {isSubmitting ? <Loader2 className="animate-spin" /> : "  Sign In"}
         </Button>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center justify-between gap-5">
           <p>Are you New? </p>
-          <Link
-            href="/auth/signup"
+          <Button
             className="rounded-sm bg-green-800 px-4 py-2 text-white"
+            onClick={() => setIsSignupPage((prev) => !prev)}
           >
             Sign up Here
-          </Link>
+          </Button>
         </div>
       </form>
     </article>
