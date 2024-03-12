@@ -7,53 +7,17 @@ import { Fragment, useEffect, useState } from "react";
 import SubmitModal from "./SubmitModal";
 import CounterDownTimer from "./CounterDownTimer";
 import { LogIn, User2Icon } from "lucide-react";
-import { onAuthStateChanged } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "@/lib/config";
-import {
-  setAuthLoading,
-  setUserAuthentication,
-} from "@/app/GlobalRedux/Features/authSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Rootstate } from "@/app/GlobalRedux/store";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const dispatch = useDispatch();
   const userAuthReducer = useSelector((state: Rootstate) => state.auth);
-  const { userAuth, userEmail, isAuthLoading } = userAuthReducer;
+  const { userAuth, userEmail } = userAuthReducer;
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-
-  useEffect(() => {
-    dispatch(setAuthLoading(true));
-    const listen = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("is email verified", user.emailVerified);
-        dispatch(
-          setUserAuthentication({
-            token: user.refreshToken,
-            email: user.email,
-          }),
-        );
-      } else {
-        dispatch(
-          setUserAuthentication({
-            token: "",
-            email: "",
-          }),
-        );
-      }
-    });
-    dispatch(setAuthLoading(false));
-
-    if (!userAuth) {
-      router.push("/cbt/auth");
-    } else if (pathname.includes("auth") && userAuth) {
-      router.push("/cbt/examform");
-    }
-    // eslint-disable-next-line
-  }, []);
 
   return (
     <nav className="fixed top-0 z-10 flex w-screen justify-between bg-primary px-10 pb-4 pt-2 shadow-sm ">
@@ -97,7 +61,10 @@ export default function Navbar() {
             </li>
           </ul>
           {userAuth ? (
-            <button className="my-auto flex items-center gap-2 border-2 border-white text-white duration-300  hover:border-green-400  hover:bg-green-400 ">
+            <button
+              onClick={() => signOut(auth)}
+              className="my-auto flex items-center gap-2 border-2 border-white text-white duration-300  hover:border-green-400  hover:bg-green-400 "
+            >
               <User2Icon /> <span> {userEmail}</span>
             </button>
           ) : (

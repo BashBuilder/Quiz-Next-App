@@ -5,11 +5,13 @@ export interface AuthType {
   userAuth: string;
   userEmail: string;
   isAuthLoading: boolean;
+  isEmailVerified: boolean;
 }
 const initialState: AuthType = {
   userAuth: "",
   userEmail: "",
   isAuthLoading: false,
+  isEmailVerified: false,
 };
 
 export const authSlice = createSlice({
@@ -21,6 +23,7 @@ export const authSlice = createSlice({
         ...state,
         userAuth: action.payload.token,
         userEmail: action.payload.email,
+        isEmailVerified: action.payload.isEmailVerified,
       };
     },
     getUserAuthentication: () => {},

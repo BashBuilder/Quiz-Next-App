@@ -22,6 +22,7 @@ export default function SignupComponent({
 }: SignupComponentType) {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false);
+  const [signupError, setSignupError] = useState("");
   const router = useRouter();
 
   const signupSchema = z
@@ -78,7 +79,15 @@ export default function SignupComponent({
         alert("Email Verification sent");
       }
     } catch (error) {
-      console.log(error);
+      // @ts-ignore
+      const message = error.message;
+      if (message.includes("network")) {
+        setSignupError("Check your Network connection");
+      } else if (message.includes("invalid-credential")) {
+        setSignupError("Wrong Email or Password");
+      } else {
+        setSignupError("Try Again");
+      }
     }
   };
 
@@ -98,7 +107,7 @@ export default function SignupComponent({
         <div>
           <div className="relative">
             <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 "
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-700 "
               onClick={() => setIsPasswordShown((prevState) => !prevState)}
             >
               {isPasswordShown ? <Eye /> : <EyeOff />}
@@ -117,7 +126,7 @@ export default function SignupComponent({
         <div>
           <div className="relative">
             <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-200 "
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-700 "
               onClick={() =>
                 setIsConfirmPasswordShown((prevState) => !prevState)
               }
@@ -136,14 +145,15 @@ export default function SignupComponent({
             </p>
           )}
         </div>
+        {signupError && <p className="text-red-500 "> {signupError} </p>}
         <Button>
           {isSubmitting ? <Loader2 className="animate-spin" /> : "  Sign Up"}
         </Button>
         <div className="flex items-center justify-between gap-5">
           <p>Already have an Account? </p>
           <Button
-            className="rounded-sm bg-green-800 px-4 py-2 text-white"
             type="button"
+            variant="link"
             onClick={() => setIsSignupPage((prev) => !prev)}
           >
             Login Here
