@@ -36,7 +36,7 @@ export default function Navbar() {
           priority
         />
       </div>
-      {pathname === "/exam" ? (
+      {pathname === "/cbt/exam" ? (
         <div className="flex w-[90vw] items-center">
           <button
             onClick={() => setIsSubmitModalOpen(true)}

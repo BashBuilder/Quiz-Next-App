@@ -13,7 +13,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "@/lib/config";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function SigninComponent({
   setIsSignupPage,
@@ -67,7 +67,6 @@ export default function SigninComponent({
       await signInWithEmailAndPassword(auth, data.email, data.password);
       router.push("/cbt/examform");
     } catch (error) {
-      console.log(error);
       // @ts-ignore
       const message = error.message;
       if (message.includes("network")) {
@@ -124,6 +123,7 @@ export default function SigninComponent({
           <div>
             <div className="relative">
               <button
+                type="button"
                 className="absolute right-0 top-1/2 -translate-y-1/2 "
                 onClick={() => setIsPasswordShown((prevState) => !prevState)}
               >

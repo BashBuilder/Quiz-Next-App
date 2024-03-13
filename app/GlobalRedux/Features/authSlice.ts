@@ -6,12 +6,14 @@ export interface AuthType {
   userEmail: string;
   isAuthLoading: boolean;
   isEmailVerified: boolean;
+  trials: number;
 }
 const initialState: AuthType = {
   userAuth: "",
   userEmail: "",
   isAuthLoading: false,
   isEmailVerified: false,
+  trials: 0,
 };
 
 export const authSlice = createSlice({

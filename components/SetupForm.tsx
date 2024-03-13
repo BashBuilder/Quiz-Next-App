@@ -25,10 +25,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchQuestions } from "@/app/GlobalRedux/Features/questionSlice";
 import { useRouter } from "next/navigation";
 import { setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
+import { Rootstate } from "@/app/GlobalRedux/store";
+import { collection, getDocs, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/config";
 
 export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
   const dispatch = useDispatch();
+  const userTrials = useSelector((state: Rootstate) => state.auth.trials);
   const router = useRouter();
 
   // Zod schema for the jamb question fetcching
@@ -74,7 +78,8 @@ export default function SetupForm() {
   });
   const selectedSubjects = watch("subjects");
 
-  const startExam: SubmitHandler<CbtShemaType> = async (data) => {
+  // @ts-ignore
+  const fetchExamQuestions = async (data) => {
     const submitData = { examType: data.examType, subjects };
     try {
       const url = `http://localhost:3000/api/exam`;
@@ -99,6 +104,28 @@ export default function SetupForm() {
       dispatch(fetchQuestions(data));
       dispatch(setTimerTime(EXAM_TIME.duration));
       router.push("/exam");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  let userDocment = [];
+
+  const startExam: SubmitHandler<CbtShemaType> = async (data) => {
+    try {
+      if (userTrials > 0) {
+        await fetchExamQuestions(data);
+        // await updateDoc(usersDb, data)
+      } else {
+        const usersDb = collection(db, "users");
+        const userSnapshot = await getDocs(usersDb);
+        const uuu = userSnapshot.forEach((doc) => {
+          console.log(doc.data());
+          return doc.id;
+        }); 
+        // console.log(userSnapshot.forEach(do))
+        // alert("You have exhausted all your trials");
+      }
     } catch (error: any) {
       console.error("The error from fetching is ", error);
     }

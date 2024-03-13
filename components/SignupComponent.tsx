@@ -12,7 +12,7 @@ import {
 import z from "zod";
 import { auth, db } from "@/lib/config";
 import { addDoc, collection } from "firebase/firestore";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 
 export interface SignupComponentType {
   setIsSignupPage: Dispatch<SetStateAction<boolean>>;
@@ -69,14 +69,18 @@ export default function SignupComponent({
       );
       const userId = user.user.uid;
       await sendEmailVerification(user.user);
-
-      if (user.user.emailVerified) {
-        const usersDb = await collection(db, "users");
-        await addDoc(usersDb, { userId: userId, userEmail: user.user.email });
-        router.push("/");
+      const usersDb = collection(db, "users");
+      await addDoc(usersDb, {
+        userId: userId,
+        userEmail: user.user.email,
+        trials: 0,
+      });
+      alert("Email Verification sent");
+      if (!user.user.emailVerified) {
         alert("email Verification completed");
+        redirect("/examform");
       } else {
-        alert("Email Verification sent");
+        redirect("/cbt/invalidemail");
       }
     } catch (error) {
       // @ts-ignore
@@ -107,6 +111,7 @@ export default function SignupComponent({
         <div>
           <div className="relative">
             <button
+              type="button"
               className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-700 "
               onClick={() => setIsPasswordShown((prevState) => !prevState)}
             >
@@ -126,6 +131,7 @@ export default function SignupComponent({
         <div>
           <div className="relative">
             <button
+              type="button"
               className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-700 "
               onClick={() =>
                 setIsConfirmPasswordShown((prevState) => !prevState)

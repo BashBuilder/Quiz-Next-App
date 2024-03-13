@@ -19,9 +19,10 @@ export default function SubmitModal({
   const router = useRouter();
 
   const submitQuestions = () => {
+    setIsSubmitModalOpen((prev) => !prev);
     dispatch(submitAnswer());
     dispatch(endExam());
-    router.push("/result");
+    router.push("/cbt/result");
   };
 
   return (
