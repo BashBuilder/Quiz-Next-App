@@ -1,19 +1,19 @@
 "use client";
+import { db } from "@/lib/config";
 import { createSlice } from "@reduxjs/toolkit";
+import { collection } from "firebase/firestore";
 
 export interface AuthType {
   userAuth: string;
   userEmail: string;
-  isAuthLoading: boolean;
-  isEmailVerified: boolean;
+  databaseID: string;
   trials: number;
 }
 const initialState: AuthType = {
   userAuth: "",
   userEmail: "",
-  isAuthLoading: false,
-  isEmailVerified: false,
   trials: 0,
+  databaseID: "",
 };
 
 export const authSlice = createSlice({
@@ -25,17 +25,29 @@ export const authSlice = createSlice({
         ...state,
         userAuth: action.payload.token,
         userEmail: action.payload.email,
-        isEmailVerified: action.payload.isEmailVerified,
       };
     },
-    getUserAuthentication: () => {},
+    getUserTrials: (state, action) => {
+      return {
+        ...state,
+        databaseID: action.payload.databaseID,
+        trials: action.payload.trials,
+      };
+    },
+    setTrials: (state, action) => {
+      return { ...state, trials: action.payload.trials };
+    },
     setAuthLoading: (state, action) => {
       return { ...state, isAuthLoading: action.payload };
     },
   },
 });
 
-export const { setUserAuthentication, getUserAuthentication, setAuthLoading } =
-  authSlice.actions;
+export const {
+  setUserAuthentication,
+  getUserTrials,
+  setAuthLoading,
+  setTrials,
+} = authSlice.actions;
 
 export default authSlice.reducer;

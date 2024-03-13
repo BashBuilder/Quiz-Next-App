@@ -26,14 +26,23 @@ import { fetchQuestions } from "@/app/GlobalRedux/Features/questionSlice";
 import { useRouter } from "next/navigation";
 import { setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
 import { Rootstate } from "@/app/GlobalRedux/store";
-import { collection, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/config";
+import { getUserTrials, setTrials } from "@/app/GlobalRedux/Features/authSlice";
 
 export default function SetupForm() {
   const [subjects, setSubjects] = useState<string[]>(["english"]);
   const dispatch = useDispatch();
-  const userTrials = useSelector((state: Rootstate) => state.auth.trials);
+  const userAuthReducer = useSelector((state: Rootstate) => state.auth);
   const router = useRouter();
+
+  const { userEmail, trials, databaseID } = userAuthReducer;
 
   // Zod schema for the jamb question fetcching
   const CbtSchema = z.object({
@@ -109,22 +118,33 @@ export default function SetupForm() {
     }
   };
 
-  let userDocment = [];
+  const getTrials = async () => {
+    const usersDb = collection(db, "users");
+    let allUsersEmail: any = [];
+    const snapshot = await getDocs(usersDb);
+    snapshot.forEach((doc) =>
+      allUsersEmail.push({ id: doc.id, data: doc.data() }),
+    );
+    const userId = allUsersEmail.filter(
+      (dbUser: any) => dbUser.data.userEmail === userEmail,
+    )[0];
+    const currentUserRef = doc(db, "users", userId.id);
+    const currentUserDoc1 = await getDoc(currentUserRef);
+    const newDoc = currentUserDoc1.data();
+    // @ts-ignore
+    let newTrials = newDoc.trials;
+    await updateDoc(currentUserRef, { trials: newTrials - 1 });
+    dispatch(setTrials({ trials: newTrials - 1 }));
+  };
 
   const startExam: SubmitHandler<CbtShemaType> = async (data) => {
     try {
-      if (userTrials > 0) {
+      if (trials > 0) {
         await fetchExamQuestions(data);
-        // await updateDoc(usersDb, data)
+        await getTrials();
+        console.log(trials);
       } else {
-        const usersDb = collection(db, "users");
-        const userSnapshot = await getDocs(usersDb);
-        const uuu = userSnapshot.forEach((doc) => {
-          console.log(doc.data());
-          return doc.id;
-        }); 
-        // console.log(userSnapshot.forEach(do))
-        // alert("You have exhausted all your trials");
+        alert("You have exhausted all your trials");
       }
     } catch (error: any) {
       console.error("The error from fetching is ", error);

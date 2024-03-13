@@ -1,15 +1,22 @@
+"use client";
+import { Rootstate } from "@/app/GlobalRedux/store";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
 export default function Dashboard() {
+  const userAuthReducer = useSelector((state: Rootstate) => state.auth);
+
+  const { trials } = userAuthReducer;
+
   return (
     <div>
       <section className="grid pt-16 md:grid-cols-12">
         <div className="col-span-6  ">
-          <h2 className="mb-6 text-5xl text-green-950">
+          <h2 className="mb-6 text-4xl text-green-950">
             Welcome to Your Dashboard
           </h2>
           <p className="my-4 flex justify-between rounded-sm bg-red-500 px-4 py-2 text-2xl capitalize text-white ">
-            <span>Numbers of Trials Left </span> <span>O</span>
+            <span>Numbers of Trials Left </span> <span>{trials} </span>
           </p>
           <div>
             <h5>Your Previous Performance</h5>

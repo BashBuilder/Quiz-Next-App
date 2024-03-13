@@ -7,7 +7,6 @@ import { useState } from "react";
 
 export default function AuthPage() {
   const [isSignupPage, setIsSignupPage] = useState(true);
-
   return (
     <div>
       <Navbar />
