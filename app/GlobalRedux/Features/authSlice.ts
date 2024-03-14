@@ -8,12 +8,14 @@ export interface AuthType {
   userEmail: string;
   databaseID: string;
   trials: number;
+  isEmailVerified: boolean;
 }
 const initialState: AuthType = {
   userAuth: "",
   userEmail: "",
   trials: 0,
   databaseID: "",
+  isEmailVerified: false,
 };
 
 export const authSlice = createSlice({
@@ -25,6 +27,7 @@ export const authSlice = createSlice({
         ...state,
         userAuth: action.payload.token,
         userEmail: action.payload.email,
+        isEmailVerified: action.payload.isEmailVerified,
       };
     },
     getUserTrials: (state, action) => {

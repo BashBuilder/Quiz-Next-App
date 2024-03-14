@@ -32,6 +32,8 @@ export default function ExamCard() {
     const allQuestionJson = localStorage.getItem("allQuestions");
     const allQuestionReload = allQuestionJson && JSON.parse(allQuestionJson);
 
+    console.log(allQuestionReload);
+
     const examSubmittedJson = localStorage.getItem("examSubmitted");
     const examSubmitted = examSubmittedJson && JSON.parse(examSubmittedJson);
 

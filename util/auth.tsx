@@ -1,35 +1,23 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useEffect, useLayoutEffect, useState } from "react";
-import { LogIn, User2Icon } from "lucide-react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useLayoutEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/config";
-import { useDispatch, useSelector } from "react-redux";
-import { Rootstate } from "@/app/GlobalRedux/store";
+import { useDispatch } from "react-redux";
 import {
   getUserTrials,
   setUserAuthentication,
 } from "@/app/GlobalRedux/Features/authSlice";
 import { collection, getDocs } from "firebase/firestore";
-import { isEmailVerified, sessionStatus, suscribe } from "@/util/session";
 
 export function useAuth() {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const router = useRouter();
-  const userAuthReducer = useSelector((state: Rootstate) => state.auth);
-  const { userAuth, userEmail, trials, databaseID } = userAuthReducer;
-
-  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-  let useraaaa;
 
   useLayoutEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // eslint-disable-next-line
-        useraaaa = user;
         console.log("is email verified", user.emailVerified);
         dispatch(
           setUserAuthentication({
@@ -38,6 +26,7 @@ export function useAuth() {
             isEmailVerified: user.emailVerified,
           }),
         );
+
         const getTrials = async () => {
           const usersDb = collection(db, "users");
           let allUsersEmail: any = [];
@@ -69,6 +58,7 @@ export function useAuth() {
             email: "",
           }),
         );
+        console.log("route Protected");
         router.replace("/cbt/auth");
       }
     });
@@ -76,11 +66,5 @@ export function useAuth() {
     // eslint-disable-next-line
   }, []);
 
-  useLayoutEffect(() => {
-    suscribe();
-    console.log(sessionStatus);
-    console.log(isEmailVerified);
-  }, []);
-
-  return useraaaa;
+  return {};
 }

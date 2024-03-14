@@ -62,23 +62,42 @@ export default function Dashboard() {
             <span>Numbers of Trials Left </span> <span>{trials} </span>
           </p>
           <div>
-            <h5>Your Previous Performance</h5>
-            {databaseResults.map((result: any, index) => (
-              <div key={index}>
-                <p className="my-4 flex justify-between rounded-sm bg-green-500 px-4 py-2 text-2xl capitalize text-white ">
-                  <span>Exam {index + 1} </span>
-                  <span>{result.data.score}/400</span>
+            {databaseResults.length === 0 ? (
+              <div>
+                <p>
+                  You have no previous performance, click below to take a test
                 </p>
+                <div className="mt-10">
+                  <Link
+                    href="/cbt/examform"
+                    className="rounded-md bg-red-500 px-4 py-2 text-white hover:opacity-80"
+                  >
+                    Take exam
+                  </Link>
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="mt-10">
-            <Link
-              href="/cbt/examform"
-              className="rounded-md bg-red-500 px-4 py-2 text-white hover:opacity-80"
-            >
-              Take another exam
-            </Link>
+            ) : (
+              <div>
+                <h5>Your Previous Performance</h5>
+
+                {databaseResults.map((result: any, index) => (
+                  <div key={index}>
+                    <p className="my-4 flex justify-between rounded-sm bg-green-500 px-4 py-2 text-2xl capitalize text-white ">
+                      <span>Exam {index + 1} </span>
+                      <span>{result.data.score}/400</span>
+                    </p>
+                  </div>
+                ))}
+                <div className="mt-10">
+                  <Link
+                    href="/cbt/examform"
+                    className="rounded-md bg-red-500 px-4 py-2 text-white hover:opacity-80"
+                  >
+                    Take another exam
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="col-span-6">

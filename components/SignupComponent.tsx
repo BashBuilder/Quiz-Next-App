@@ -89,8 +89,10 @@ export default function SignupComponent({
         setSignupError("Check your Network connection");
       } else if (message.includes("invalid-credential")) {
         setSignupError("Wrong Email or Password");
+      } else if (message.includes("email-already-in-use")) {
+        setSignupError("Email already in use");
       } else {
-        setSignupError("Try Again");
+        setSignupError(message);
       }
     }
   };
