@@ -1,10 +1,14 @@
+"use client";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dispatch, SetStateAction } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { submitAnswer } from "@/app/GlobalRedux/Features/answerSlice";
 import { endExam } from "@/app/GlobalRedux/Features/timerSlice";
 import { useRouter } from "next/navigation";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "@/lib/config";
+import { Rootstate } from "@/app/GlobalRedux/store";
 
 interface SubmitModalProps {
   isSubmitModalOpen: boolean;
@@ -15,14 +19,26 @@ export default function SubmitModal({
   isSubmitModalOpen,
   setIsSubmitModalOpen,
 }: SubmitModalProps) {
+  const userAnswerReducer = useSelector((state: Rootstate) => state.answer);
+  const userAuthReducer = useSelector((state: Rootstate) => state.auth);
+  const { subjectScore, score } = userAnswerReducer;
+  const { userEmail } = userAuthReducer;
+
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const submitQuestions = () => {
-    setIsSubmitModalOpen((prev) => !prev);
-    dispatch(submitAnswer());
-    dispatch(endExam());
-    router.push("/cbt/result");
+  const submitQuestions = async () => {
+    try {
+      router.replace("/cbt/result");
+      dispatch(endExam());
+      dispatch(submitAnswer());
+      setIsSubmitModalOpen((prev) => !prev);
+      const uploadData = { subjectScore, score, userEmail };
+      const userScore = collection(db, "userScore");
+      await addDoc(userScore, uploadData);
+    } catch (error) {
+      console.log("The submit error is : ", error);
+    }
   };
 
   return (

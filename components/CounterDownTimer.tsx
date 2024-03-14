@@ -69,12 +69,6 @@ export default function CounterDownTimer() {
   }, [isExamStarted]);
 
   useEffect(() => {
-    const timerJson = localStorage.getItem("examTime");
-    if (timerJson) {
-      const reloadTimer: { duration: number; isExamStarted: boolean } =
-        JSON.parse(timerJson);
-      dispatch(setTimerTime(reloadTimer.duration));
-    }
     // eslint-disable-next-line
   }, []);
 

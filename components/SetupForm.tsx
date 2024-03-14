@@ -108,11 +108,13 @@ export default function SetupForm() {
         duration: 7200,
         isExamStarted: true,
       };
-      localStorage.setItem("allQuestions", JSON.stringify(data));
       localStorage.setItem("examTime", JSON.stringify(EXAM_TIME));
+      localStorage.setItem("allQuestions", JSON.stringify(data));
+      const submittedDetails = { isSubmitted: false, selectedOptions: "" };
+      localStorage.setItem("examSubmitted", JSON.stringify(submittedDetails));
       dispatch(fetchQuestions(data));
       dispatch(setTimerTime(EXAM_TIME.duration));
-      router.push("/exam");
+      router.replace("/cbt/exam");
     } catch (error) {
       console.log(error);
     }

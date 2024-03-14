@@ -17,6 +17,8 @@ export interface AnswerSlice {
   score: number;
   subjectScore: SubjectScores[];
   isSubmitted: boolean;
+  subjects: string[];
+  examStatus: boolean;
 }
 const initialState: AnswerSlice = {
   selectedOptions: [],
@@ -24,6 +26,8 @@ const initialState: AnswerSlice = {
   score: 0,
   subjectScore: [],
   isSubmitted: false,
+  subjects: [],
+  examStatus: false,
 };
 
 export const answerSlice = createSlice({
@@ -31,7 +35,10 @@ export const answerSlice = createSlice({
   initialState,
   reducers: {
     getAnswers: (state, action) => {
-      const questions: Questions[] = action.payload;
+      const questions: Questions[] = action.payload.allQuestionReload;
+      const subjects = action.payload.subjects;
+      const isSubmitted = action.payload.isSubmitted;
+      const selectedOptions = action.payload.selectedOptions;
       let ans: Solution[] = [];
       let opt: Solution[] = [];
       questions?.forEach((questions: Questions) => {
@@ -41,7 +48,23 @@ export const answerSlice = createSlice({
           opt = [...opt, { num: index + 1, subject: sub, answer: "" }];
         });
       });
-      return { ...state, answers: ans, selectedOptions: opt };
+      if (isSubmitted) {
+        return {
+          ...state,
+          answers: ans,
+          selectedOptions,
+          subjects,
+          isSubmitted,
+        };
+      } else {
+        return {
+          ...state,
+          answers: ans,
+          selectedOptions: opt,
+          subjects,
+          isSubmitted,
+        };
+      }
     },
     updateAnswers: (state, action) => {
       const updatedOption = action.payload;
@@ -58,24 +81,39 @@ export const answerSlice = createSlice({
       }
       return state;
     },
+
     submitAnswer: (state) => {
+      const submittedDetails = {
+        isSubmitted: true,
+        selectedOptions: state.selectedOptions,
+      };
+      localStorage.setItem("examSubmitted", JSON.stringify(submittedDetails));
       const answers = state.answers;
       const options = state.selectedOptions;
       let score = 0;
       let subjectScores: { [subject: string]: number } = {};
+      state.subjects.forEach((subject) => {
+        subjectScores[subject] = 0;
+      });
       answers.forEach((answer, index) => {
         if (options[index].answer === answer.answer) {
-          score++;
           if (subjectScores.hasOwnProperty(answer.subject)) {
-            subjectScores[answer.subject]++;
-          } else {
-            subjectScores[answer.subject] = 1;
+            if (answer.subject === "english") {
+              subjectScores[answer.subject] += 1.7;
+            } else {
+              subjectScores[answer.subject] += 2.5;
+            }
           }
         }
       });
       const formattedSubjectScores: SubjectScores[] = Object.entries(
         subjectScores,
-      ).map(([subject, score]) => ({ subject, score }));
+      ).map(([subject, score]) => ({ subject, score: Math.round(score) }));
+
+      score = formattedSubjectScores.reduce(
+        (acc, subject) => acc + subject.score,
+        0,
+      );
       return {
         ...state,
         isSubmitted: true,

@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Fragment } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Result() {
   const answerSliceData = useSelector((state: Rootstate) => state.answer);
@@ -13,9 +14,9 @@ export default function Result() {
   const { subjectScore, score } = answerSliceData;
 
   return (
-    <section className="grid pt-16 md:grid-cols-12">
+    <section className="grid  md:grid-cols-12">
       <div className="col-span-6  ">
-        <h2 className="mb-6 text-5xl text-green-950">
+        <h2 className="mb-6 text-4xl text-green-950">
           Here is your performance
         </h2>
         {subjectScore.map((suj, index) => (
@@ -30,7 +31,12 @@ export default function Result() {
           <span>Total </span> <span> {score}</span>
         </p>
         <div className="my-10 flex gap-10">
-          <Button variant="destructive">Check Solution</Button>
+          <Link
+            href="/cbt/exam"
+            className="rounded-md bg-red-500 px-4 py-2 text-white"
+          >
+            Check Solution
+          </Link>
           <Button>Try Again</Button>
         </div>
       </div>

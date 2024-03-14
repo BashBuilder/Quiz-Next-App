@@ -22,7 +22,7 @@ export const timerSlice = createSlice({
         duration: 0,
         isExamStarted: false,
       };
-      // localStorage.setItem("examTime", JSON.stringify(examTime));
+      localStorage.setItem("examTime", JSON.stringify(examTime));
       return {
         duration: examTime.duration,
         isExamStarted: examTime.isExamStarted,

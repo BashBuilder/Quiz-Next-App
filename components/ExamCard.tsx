@@ -14,6 +14,7 @@ import {
 } from "@/app/GlobalRedux/Features/answerSlice";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { endExam, setTimerTime } from "@/app/GlobalRedux/Features/timerSlice";
 
 export default function ExamCard() {
   const dispatch = useDispatch();
@@ -29,14 +30,38 @@ export default function ExamCard() {
   // fetch questions from local storage
   useEffect(() => {
     const allQuestionJson = localStorage.getItem("allQuestions");
-    const allQuestionReload = allQuestionJson
-      ? JSON.parse(allQuestionJson)
-      : null;
+    const allQuestionReload = allQuestionJson && JSON.parse(allQuestionJson);
+
+    const examSubmittedJson = localStorage.getItem("examSubmitted");
+    const examSubmitted = examSubmittedJson && JSON.parse(examSubmittedJson);
+
     dispatch(fetchQuestions(allQuestionReload));
     setQuestions(allQuestionReload[0]);
-    dispatch(getAnswers(allQuestionReload));
 
-    console.log(allQuestionReload);
+    let subjects: string[] = [];
+    allQuestionReload.forEach((question: any) =>
+      subjects.push(question.subject),
+    );
+    dispatch(
+      getAnswers({
+        allQuestionReload,
+        subjects,
+        isSubmitted: examSubmitted.isSubmitted,
+        selectedOptions: examSubmitted.selectedOptions,
+      }),
+    );
+
+    // timer use effect
+    if (!examSubmitted.isSubmitted) {
+      const timerJson = localStorage.getItem("examTime");
+      if (timerJson) {
+        const reloadTimer: { duration: number; isExamStarted: boolean } =
+          JSON.parse(timerJson);
+        dispatch(setTimerTime(reloadTimer.duration));
+      }
+    } else {
+      dispatch(endExam());
+    }
     // eslint-disable-next-line
   }, []);
 
@@ -215,7 +240,7 @@ export default function ExamCard() {
     );
   } else {
     return (
-      <div className="flex items-center justify-center py-10 md:py-20 ">
+      <div className="flex min-h-96 items-center justify-center py-10 md:py-20 ">
         <button className="rounded-md bg-primary px-4 py-2 text-background ">
           <Loader2Icon className="animate-spin" />
         </button>

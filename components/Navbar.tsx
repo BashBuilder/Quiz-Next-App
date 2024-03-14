@@ -15,14 +15,15 @@ import {
   setUserAuthentication,
 } from "@/app/GlobalRedux/Features/authSlice";
 import { collection, getDocs } from "firebase/firestore";
-import { isEmailVerified, sessionStatus, suscribe } from "@/util/session";
 
 export default function Navbar() {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const router = useRouter();
   const userAuthReducer = useSelector((state: Rootstate) => state.auth);
+  const userAnswerReducer = useSelector((state: Rootstate) => state.answer);
   const { userAuth, userEmail, trials, databaseID } = userAuthReducer;
+  const { isSubmitted } = userAnswerReducer;
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
@@ -91,7 +92,7 @@ export default function Navbar() {
           priority
         />
       </div>
-      {pathname === "/cbt/exam" ? (
+      {pathname === "/cbt/exam" && !isSubmitted ? (
         <div className="flex w-[90vw] items-center">
           <button
             onClick={() => setIsSubmitModalOpen(true)}
