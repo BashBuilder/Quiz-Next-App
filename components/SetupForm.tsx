@@ -170,7 +170,7 @@ export default function SetupForm() {
         >
           <div>
             <Image
-              src="/img/jamb.png"
+              src="/img/jamblogo.png"
               alt="jamb"
               width={200}
               height={200}
@@ -179,34 +179,6 @@ export default function SetupForm() {
             />
           </div>
           <h4 className="text-center"> JAMB CBT</h4>
-          {/* Exam Type */}
-          {/* <div className="mt-2 flex flex-col gap-2 ">
-            <label className="font-semibold">Exam Type</label>
-            <Controller
-              control={control}
-              name="examType"
-              render={({ field }) => {
-                return (
-                  <Select {...field} onValueChange={field.onChange}>
-                    <SelectTrigger disabled>
-                      <SelectValue
-                        placeholder="Select an Exam"
-                        defaultValue="utme"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="utme">Jamb</SelectItem>
-                        <SelectItem value="waec">Waec</SelectItem>
-                        <SelectItem value="neco">Neco</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                );
-              }}
-            />
-          </div> */}
-          {/* Subjects */}
           <div className="mt-2 flex flex-col gap-2 ">
             <label className="font-semibold">Subjects</label>
             <ul>
@@ -231,7 +203,7 @@ export default function SetupForm() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">Select Subjects</Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="h-40 w-[80vw] max-w-80 overflow-y-scroll  ">
+              <DropdownMenuContent className="h-80 w-[80vw] max-w-80 overflow-y-scroll  ">
                 <DropdownMenuSeparator />
                 {selectedSubjects.map((subject, index) => (
                   <div key={index}>

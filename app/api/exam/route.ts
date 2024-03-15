@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const { subjects } = body;
     const newSubjects = subjects.splice(1, 3);
 
-    const firestoreQuestion = collection(db, "englishCheck");
+    const firestoreQuestion = collection(db, "englishQuestions");
     const englishSnapshot = await getDocs(firestoreQuestion);
     // @ts-ignore
     const englishQeustion = [];

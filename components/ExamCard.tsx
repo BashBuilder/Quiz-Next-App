@@ -32,8 +32,6 @@ export default function ExamCard() {
     const allQuestionJson = localStorage.getItem("allQuestions");
     const allQuestionReload = allQuestionJson && JSON.parse(allQuestionJson);
 
-    console.log(allQuestionReload);
-
     const examSubmittedJson = localStorage.getItem("examSubmitted");
     const examSubmitted = examSubmittedJson && JSON.parse(examSubmittedJson);
 
@@ -88,22 +86,22 @@ export default function ExamCard() {
     const correctColor = "bg-green-500 text-white";
     const wrongColor = "bg-red-500 text-white";
 
+    const currentNum: number = questionIndex + 1;
+    const { subject } = questions;
+
     let q;
     let currentQuestion;
     for (let i = 0; i < questions.data.length; i++) {
-      if (questions.data[i].questionNub == questionIndex) q = questions.data[i];
+      if (questions.data[i].questionNub == currentNum) q = questions.data[i];
     }
 
-    if (q) {
+    if (q && subject === "english") {
       currentQuestion = q;
     } else {
       currentQuestion = questions.data[questionIndex];
     }
-
     const { option, question, image: questionImage } = currentQuestion;
-    const { subject } = questions;
 
-    const currentNum: number = questionIndex + 1;
     const options: Solution[] = selectedOptions.filter(
       (option) => option.subject === subject,
     );

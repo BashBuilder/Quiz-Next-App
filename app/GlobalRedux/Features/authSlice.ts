@@ -1,7 +1,5 @@
 "use client";
-import { db } from "@/lib/config";
 import { createSlice } from "@reduxjs/toolkit";
-import { collection } from "firebase/firestore";
 
 export interface AuthType {
   userAuth: string;

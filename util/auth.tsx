@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/config";
 import { useDispatch } from "react-redux";
