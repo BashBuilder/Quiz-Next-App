@@ -13,7 +13,8 @@ export interface QuestionData {
   section: string;
   solution: string;
   questionNub: number;
-  topic: string;
+  topic?: string;
+  category?: string;
 }
 export interface QuestionOption {
   a: string;

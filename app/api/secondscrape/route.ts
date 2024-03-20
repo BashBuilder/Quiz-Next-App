@@ -15,13 +15,14 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
-    const year = 2020;
-    const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&topic=&novel=`;
+    const year = 2023;
+    const url = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=1`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
-    const numberOfPages = $(".page-item").get().length;
+    // const numberOfPages = $(".page-item").get().length;
     const questions: QuestionData[] = [];
-    for (let index = 0; index < numberOfPages - 2; index++) {
+    for (let index = 1; index <= 8; index++) {
+      console.log(index);
       const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&page=${index}`;
       const pagesResponse = await axios.get(uri);
       const $page = cheerio.load(pagesResponse.data);
@@ -46,7 +47,7 @@ export async function GET() {
           question: "",
           section: "",
           option: { a: "", b: "", c: "", d: "", e: "" },
-          topic: "",
+          category: "",
           image: "",
           answer: "",
           solution: "",
@@ -57,7 +58,6 @@ export async function GET() {
         questionNub = parseInt(
           $page(element).find(".question_sn").text().trim(),
         );
-
         const questionDescElement = $page(element).find(".question-desc");
         let question: string | null = "";
         let section: string | null = "";
@@ -92,11 +92,12 @@ export async function GET() {
         });
       });
     }
-    console.log(questions);
-    console.log(questions.length);
-    const firestoreQuestion = collection(db, "english");
-    await addDoc(firestoreQuestion, { ...questions });
-    return NextResponse.json({ questions });
+    const firestoreQuestion = collection(db, "englishlit");
+    const tt: QuestionData[] = [...questions];
+    const sortedQuestion = tt.sort((a, b) => a.questionNub - b.questionNub);
+
+    await addDoc(firestoreQuestion, { data: [...sortedQuestion] });
+    return NextResponse.json({ data: [...sortedQuestion] });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: "error occured" });
