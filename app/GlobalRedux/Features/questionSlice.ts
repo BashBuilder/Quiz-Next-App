@@ -21,7 +21,7 @@ export interface QuestionOption {
   b: string;
   c: string;
   d: string;
-  e: string;
+  e?: string;
 }
 export interface Questions {
   subject: string;

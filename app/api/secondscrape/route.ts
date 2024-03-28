@@ -15,15 +15,14 @@ export async function GET() {
       [3]: "d",
       [4]: "e",
     };
-    const year = 2023;
+    const year = 2021;
     const url = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=1`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
     // const numberOfPages = $(".page-item").get().length;
     const questions: QuestionData[] = [];
     for (let index = 1; index <= 8; index++) {
-      console.log(index);
-      const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=${year}&page=${index}`;
+      const uri = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=${index}`;
       const pagesResponse = await axios.get(uri);
       const $page = cheerio.load(pagesResponse.data);
       const pageQuestionItemElements = $page(".question-item");
@@ -87,7 +86,7 @@ export async function GET() {
           question,
           option,
           section,
-          questionNub,
+          questionNub: questionNub,
           id: questionNub,
         });
       });
