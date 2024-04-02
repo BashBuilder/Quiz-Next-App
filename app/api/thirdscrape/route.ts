@@ -33,9 +33,6 @@ export async function GET() {
     // await addDoc(firestoreQuestion, { data: sortedQuetion, year });
     return NextResponse.json(sortedQuetion);
   } catch (error) {
-    // console error added
-
-    console.log(error);
     return NextResponse.json({ error: "error occured" });
   }
 
