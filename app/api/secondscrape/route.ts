@@ -16,13 +16,15 @@ export async function GET() {
       [4]: "e",
     };
     const year = 2021;
-    const url = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=1`;
+    // const url = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=1`;
+    const url = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2021&topic=language-registers&novel=`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
     // const numberOfPages = $(".page-item").get().length;
     const questions: QuestionData[] = [];
-    for (let index = 1; index <= 8; index++) {
-      const uri = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=${index}`;
+    for (let index = 1; index <= 1; index++) {
+      // const uri = `https://myschool.ng/classroom/literature-in-english?exam_type=jamb&exam_year=${year}&page=${index}`;
+      const uri = `https://myschool.ng/classroom/english-language?exam_type=jamb&exam_year=2021&topic=language-registers&novel=`;
       const pagesResponse = await axios.get(uri);
       const $page = cheerio.load(pagesResponse.data);
       const pageQuestionItemElements = $page(".question-item");
@@ -45,7 +47,7 @@ export async function GET() {
           questionNub: 0,
           question: "",
           section: "",
-          option: { a: "", b: "", c: "", d: "", e: "" },
+          option: { a: "", b: "", c: "", d: "" },
           category: "",
           image: "",
           answer: "",
@@ -53,7 +55,7 @@ export async function GET() {
           examtype: "utme",
           examyear: year.toString(),
         };
-        let option = { a: "", b: "", c: "", d: "", e: "" };
+        let option = { a: "", b: "", c: "", d: "" };
         questionNub = parseInt(
           $page(element).find(".question_sn").text().trim(),
         );
@@ -91,11 +93,11 @@ export async function GET() {
         });
       });
     }
-    const firestoreQuestion = collection(db, "englishlit");
+    // const firestoreQuestion = collection(db, "englishlit");
     const tt: QuestionData[] = [...questions];
     const sortedQuestion = tt.sort((a, b) => a.questionNub - b.questionNub);
 
-    await addDoc(firestoreQuestion, { data: [...sortedQuestion] });
+    // await addDoc(firestoreQuestion, { data: [...sortedQuestion] });
     return NextResponse.json({ data: [...sortedQuestion] });
   } catch (error) {
     console.log(error);
