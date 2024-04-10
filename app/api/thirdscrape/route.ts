@@ -3,6 +3,7 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/config";
 import { QuestionData } from "@/app/GlobalRedux/Features/questionSlice";
 import { addEng } from "@/util/addEng";
+import { eng1, eng2 } from "@/lib/english";
 
 export async function GET() {
   // try {
@@ -37,14 +38,27 @@ export async function GET() {
   // }
 
   try {
+    const emptyList: QuestionData[] = [];
+    emptyList.push(...eng1);
+
+    const temp: any[] = [];
     const englishQuestion = collection(db, "englishQuestions");
     const snapShot = await getDocs(englishQuestion);
-    const emptyList: QuestionData[] = [];
-    emptyList.push(...addEng);
-    snapShot.forEach((doc) => emptyList.push(...doc.data().data));
+
+    snapShot.forEach((doc) => temp.push(doc.data().data));
+
+    temp[1].splice(0, 40).forEach((item, index) => {
+      const newItem = {
+        ...item,
+        questionNub: index + 16,
+      };
+      emptyList.push(newItem);
+    });
+    emptyList.push(...eng2);
+
     const sortedList = emptyList.sort((a, b) => a.questionNub - b.questionNub);
     await addDoc(englishQuestion, { data: sortedList });
-    console.log(sortedList);
+    console.log(emptyList.length);
     return NextResponse.json({ data: sortedList });
   } catch (error) {
     console.log(error);
