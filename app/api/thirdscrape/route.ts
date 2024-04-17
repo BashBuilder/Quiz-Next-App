@@ -3,13 +3,13 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/config";
 import { QuestionData } from "@/app/GlobalRedux/Features/questionSlice";
 import { addEng } from "@/util/addEng";
-import { eng1, eng2 } from "@/lib/english";
+import { eng1 } from "@/lib/english";
 
 export async function GET() {
   // try {
   //   const token = "ALOC-caa562dfeb1a7de83a69";
   //   const subject = "english";
-  //   const year = 2015;
+  //   const year = 2014;
 
   //   const url = `https://questions.aloc.com.ng/api/v2/m/60?subject=${subject}&year=${year}`;
   //   const response = await fetch(url, {
@@ -30,8 +30,8 @@ export async function GET() {
   //   );
   //   console.log(sortedQuetion);
   //   console.log(sortedQuetion.length);
-  //   // const firestoreQuestion = collection(db, "englishQuestions");
-  //   // await addDoc(firestoreQuestion, { data: sortedQuetion, year });
+  //   const firestoreQuestion = collection(db, "englishQuestions");
+  //   await addDoc(firestoreQuestion, { data: sortedQuetion, year });
   //   return NextResponse.json({ length: sortedQuetion.length, sortedQuetion });
   // } catch (error) {
   //   return NextResponse.json({ error: "error occured" });
@@ -47,14 +47,13 @@ export async function GET() {
 
     snapShot.forEach((doc) => temp.push(doc.data().data));
 
-    temp[1].splice(0, 40).forEach((item, index) => {
+    temp[1].splice(0, 45).forEach((item, index) => {
       const newItem = {
         ...item,
         questionNub: index + 16,
       };
       emptyList.push(newItem);
     });
-    emptyList.push(...eng2);
 
     const sortedList = emptyList.sort((a, b) => a.questionNub - b.questionNub);
     await addDoc(englishQuestion, { data: sortedList });
